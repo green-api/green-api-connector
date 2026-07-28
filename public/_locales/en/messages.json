@@ -1,0 +1,38 @@
+{
+  "extName": {
+    "message": "GREEN-API Connector",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "An extension for completing passkey authentication for your WhatsApp instance. Read the documentation for more details about the extension.",
+    "description": "Extension description"
+  },
+  "idInstancePlaceholder": {
+    "message": "Instance ID",
+    "description": "Placeholder for the instance id input"
+  },
+  "apiTokenPlaceholder": {
+    "message": "API token instance",
+    "description": "Placeholder for the API token input"
+  },
+  "linkDeviceButton": {
+    "message": "Link device",
+    "description": "Submit button label"
+  },
+  "formMsgAlreadyInProgress": {
+    "message": "Complete the previous authorization process or close the WhatsApp Web tab", 
+    "description": "Import error: another import already running" 
+  },
+  "formMsgUnexpectedError": { 
+    "message": "An unexpected error occurred", 
+    "description": "Import error: unexpected failure" 
+  },
+  "formMsgExistingSession": { 
+    "message": "You are already logged in to WhatsApp Web. Log out of your WhatsApp account and try again", 
+    "description": "Existing WhatsApp session detected" 
+  },
+  "formMsgImportSent": { 
+    "message": "The authentication data was sent to the instance", 
+    "description": "Import completed successfully" 
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "extName": {
+    "message": "GREEN-API Connector",
+    "description": "Название расширения"
+  },
+  "extDescription": {
+    "message": "Расширение для прохождения passkey авторизации вашего WhatsApp инстанса. Подробнее о расширении читайте в документации.",
+    "description": "Описание расширения"
+  },
+  "idInstancePlaceholder": {
+    "message": "ID инстанса",
+    "description": "Placeholder для поля ID инстанса"
+  },
+  "apiTokenPlaceholder": {
+    "message": "API токен инстанса",
+    "description": "Placeholder для поля API токена"
+  },
+  "linkDeviceButton": {
+    "message": "Связать устройство",
+    "description": "Текст кнопки отправки"
+  },
+  "formMsgAlreadyInProgress": {
+    "message": "Завершите прошлый процесс авторизации или закройте вкладку WhatsApp Web",
+    "description": "Ошибка импорта: уже идёт другой процесс"
+  },
+  "formMsgUnexpectedError": {
+    "message": "Возникла непредвиденная ошибка",
+    "description": "Ошибка импорта: непредвиденный сбой"
+  },
+  "formMsgExistingSession": {
+    "message": "Вход в WhatsApp Web уже выполнен. Выйдите из аккаунта WhatsApp и повторите попытку",
+    "description": "Обнаружена активная сессия WhatsApp"
+  },
+  "formMsgImportSent": {
+    "message": "Данные для авторизации были отправлены на инстанс",
+    "description": "Импорт успешно завершён"
+  }
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GREEN-API Connector example page</title>
+
+  <style>
+    body { margin: 0; font-family: system-ui}
+    .wrap { max-width: 680px; margin: 0 auto; padding: 2rem 1rem; }
+    .wrap > * { margin-bottom: 1.5rem; }
+    label { display: block; margin-bottom: 0.375rem; font-size: 0.85rem; }
+    .btn { display: block; width: 100%; padding: 0.75rem 1rem; margin-bottom: 0.85rem; border: none; border-radius: 0.375rem; background: #e2e8f0; cursor: pointer; }
+    .btn:hover { background: #cbd5e1; }
+    .input { width: 100%; margin-bottom: 0.375rem; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; box-sizing: border-box; }
+    .panel { background: #fff; border: 1px solid #cbd5e1; border-radius: 0.375rem; overflow: hidden; }
+    .panel-head { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-bottom: 1px solid #cbd5e1; background: #f8fafc; }
+    .link-btn { background: transparent; border: none; cursor: pointer; }
+    .log { height: 16rem; overflow-y: auto; font-family: ui-monospace, Consolas, monospace; font-size: 0.85rem; }
+    .log-row { display: flex; gap: 0.5rem; align-items: flex-start; padding: 0.375rem 0.625rem; }
+    .log-row.out { background: #f0fdf4; }
+    .log-row.in { background: #f9fafb; }
+    .log-arrow.out { color: #22c55e; }
+    .log-arrow.in { color: #f43f5e; }
+    .log-msg { font-family: ui-monospace, Consolas, monospace; word-break: break-all; }
+  </style>
+</head>
+
+<body>
+
+  <div class="wrap">
+    <header>
+      <h1>GREEN-API Connector example page</h1>
+    </header>
+
+    <div class>
+      <button id="btn-ping" class="btn">Проверить расширение (PING)</button>
+      <div>
+        <label for="url-input">URL на который будут отправленные данные авторизации</label>
+        <input id="url-input" class="input" type="text" placeholder="https://example.com">
+        <button id="btn-start-auth" class="btn">Начать авторизацию (START_PASSKEY_IMPORT)</button>
+      </div>
+      <button id="btn-clear" class="btn">Очистить данные (CLEAR_AND_CONTINUE)</button>
+      <button id="btn-cancel" class="btn">Отменить импорт (CANCEL_IMPORT)</button>
+    </div>
+
+
+    <div class="panel">
+      <div class="panel-head">
+        <span>Журнал событий</span>
+        <button id="btn-clear-log" class="link-btn" title="Очистить журнал">Очистить</button>
+      </div>
+      <div id="log" class="log"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // Маркер расширения
+      const EXTENSION_SOURCE = 'green-api-connector'
+
+      document.getElementById('btn-ping').addEventListener('click', function () {
+        let payload = {target: EXTENSION_SOURCE, type: "PING"};
+
+        window.postMessage(payload, '*')
+        appendLog('out', JSON.stringify(payload));
+      });
+
+      var urlInput = document.getElementById('url-input');
+      document.getElementById('btn-start-auth').addEventListener('click', function () {
+        const url = urlInput.value.trim()
+        let payload = {target: EXTENSION_SOURCE, type: "START_PASSKEY_IMPORT", url: url};
+
+        window.postMessage(payload, '*')
+        appendLog('out', JSON.stringify(payload));
+      });
+
+      document.getElementById('btn-clear').addEventListener('click', function () {
+        let payload = {target: EXTENSION_SOURCE, type: "CLEAR_AND_CONTINUE"};
+
+        window.postMessage(payload, '*')
+        appendLog('out', JSON.stringify(payload));
+      });
+
+      document.getElementById('btn-cancel').addEventListener('click', function () {
+        let payload = {target: EXTENSION_SOURCE, type: "CANCEL_IMPORT"};
+
+        window.postMessage(payload, '*')
+        appendLog('out', JSON.stringify(payload));
+      });
+
+      document.getElementById('btn-clear-log').addEventListener('click', function () {
+        log.innerHTML = '';
+      });
+
+      window.addEventListener('message', (event) =>
+        {
+          const isEventFromExtension = event.source === window && event.data.source === EXTENSION_SOURCE;
+          if (!event.data || !isEventFromExtension) return;
+
+          appendLog('in', JSON.stringify(event.data))
+        }
+      )
+      
+      // Журнал событий
+      var log = document.getElementById('log');
+      function appendLog(type, payload) {
+        var arrows = { out: '↑', in: '↓' };
+        var row = document.createElement('div');
+        row.className = 'log-row ' + type;
+
+        var arrow = document.createElement('span');
+        arrow.className = 'log-arrow ' + type;
+        arrow.textContent = arrows[type];
+
+        var msg = document.createElement('span');
+        msg.className = 'log-msg';
+        msg.textContent = payload;
+
+        row.appendChild(arrow);
+        row.appendChild(msg);
+        log.appendChild(row);
+
+        log.scrollTop = log.scrollHeight;
+      }
+    })();
+  </script>
+
+</body>
+
+</html>
