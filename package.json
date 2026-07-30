@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "build:firefox": "cross-env TARGET=firefox vite build",
+    "build:chrome": "cross-env TARGET=chrome vite build"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",
@@ -15,9 +17,11 @@
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.28",
     "@types/chrome": "^0.0.280",
+    "@types/node": "^26.1.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
+    "cross-env": "^10.1.0",
     "typescript": "^5.6.3",
     "vite": "^5.4.10"
   }

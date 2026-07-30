@@ -485,7 +485,12 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (typeof message !== 'object' || message === null) return undefined
-  if (!isTrustedOrigin(sender.origin ?? sender.url) && !isFromOwnExtension(sender)) return undefined
+  
+  let origin = sender.origin;
+  if (!origin || origin === "null"){
+    origin = sender.url
+  }
+  if (!isTrustedOrigin(origin) && !isFromOwnExtension(sender)) return undefined
 
   const candidate = message as Record<string, unknown>
   const originTabId = sender.tab?.id ?? null

@@ -10,7 +10,11 @@ export default defineManifest({
   version: '1.0.0',
   permissions: ['scripting', 'tabs', 'browsingData'],
   host_permissions: ['https://web.whatsapp.com/*', ...APP_HOSTS],
-  background: { service_worker: 'src/background/index.ts', type: 'module' },
+  background: { 
+    service_worker: 'src/background/index.ts',
+    type: 'module',
+    scripts: ['src/background/index.ts'],
+  },
   action: {
     default_popup: 'index.html',
     default_icon: {
