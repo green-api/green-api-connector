@@ -110,4 +110,4 @@ To use your own logo, you must replace the files in the `public/icons` folder
 The title and description text in the extension menu are displayed based on data from the `public/_locales` folder
 
 ### Colors
-You can change the color palette via the CSS file [src/popup/theme.css](src/popup/theme.css)
+You can change the color palette via the CSS file [src/shared/theme.css](src/shared/theme.css)

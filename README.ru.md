@@ -110,4 +110,4 @@ window.postMessage({target:"green-api-connector", type:"START_PASSKEY_IMPORT", u
 Текст заголовка и описания в меню расширения отображается на основе данных из папки `public/_locales`
 
 ### Цвета
-Палитру цветов можно поменять через CSS файл [src/popup/theme.css](src/popup/theme.css)
+Палитру цветов можно поменять через CSS файл [src/shared/theme.css](src/shared/theme.css)
