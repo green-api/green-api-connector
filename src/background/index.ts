@@ -1,4 +1,4 @@
-import { CONNECTOR_SOURCE as SOURCE, isTrustedOrigin } from '../shared/config'
+import { CONNECTOR_SOURCE, isTrustedOrigin } from '../shared/config'
 import './popout'
 
 export { }
@@ -110,7 +110,7 @@ function removeBrowsingData(origin: string): Promise<void> {
 }
 
 function sendImportResponse(tabId: number | null, message: unknown): void {
-  const payload = { source: SOURCE, ...(message as object) }
+  const payload = { source: CONNECTOR_SOURCE, ...(message as object) }
   if (!tabId) {
     chrome.runtime.sendMessage(payload, () => { void chrome.runtime.lastError })
     return
@@ -118,8 +118,17 @@ function sendImportResponse(tabId: number | null, message: unknown): void {
   chrome.tabs.sendMessage(tabId, payload, () => { void chrome.runtime.lastError })
 }
 
+function isExtensionUrl(url: string) {
+  const extensionUrl = chrome.runtime.getURL('');
+  return url.startsWith(extensionUrl)
+}
+
 export function isFromOwnExtension(sender: chrome.runtime.MessageSender) {
-  return sender.id === chrome.runtime.id && (sender.url ?? '').startsWith(chrome.runtime.getURL(''));
+  if (!sender.url){
+    return false;
+  }
+
+  return sender.id === chrome.runtime.id && isExtensionUrl(sender.url);
 }
 
 async function readExistingSessionJid(tabId: number): Promise<string | null> {
