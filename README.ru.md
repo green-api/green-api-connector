@@ -15,9 +15,14 @@
     npm install 
     ```
 2. Собрать расширение
-    ```bash
-    npm run build
-    ```
+    * Chrome:
+      ```bash
+      npm run build
+      ```
+    * Firefox:
+      ```bash
+      npm run build:firefox
+      ```
 3. Распакованное расширение для бразуера будет в папке `dist/`
 
 ## Быстрый старт

@@ -15,9 +15,14 @@ The extension opens a separate WhatsApp Web window for authorization, after whic
     npm install
     ```
 2. Build the extension
-    ```bash
-    npm run build
-    ```
+    * Chrome:
+        ```bash
+        npm run build
+        ```
+    * Firefox:
+        ```bash
+        npm run build:firefox
+        ```
 3. The unpacked browser extension will be in the `dist/` folder
 
 ## Quick Start
