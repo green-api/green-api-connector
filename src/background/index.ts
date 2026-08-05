@@ -1,4 +1,5 @@
 import { CONNECTOR_SOURCE as SOURCE, isTrustedOrigin } from '../shared/config'
+import './popout'
 
 export { }
 
@@ -118,7 +119,7 @@ function sendImportResponse(tabId: number | null, message: unknown): void {
 }
 
 function isFromOwnExtension(sender: chrome.runtime.MessageSender) {
-  return sender.id === chrome.runtime.id && sender.tab === undefined;
+  return sender.id === chrome.runtime.id && (sender.url ?? '').startsWith(chrome.runtime.getURL(''));
 }
 
 async function readExistingSessionJid(tabId: number): Promise<string | null> {

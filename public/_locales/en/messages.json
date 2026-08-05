@@ -7,6 +7,14 @@
     "message": "An extension for completing passkey authentication for your WhatsApp instance. Read the documentation for more details about the extension.",
     "description": "Extension description"
   },
+  "openInstanceAuthForm": {
+    "message": "Authorize Instance",
+    "description": "Button to open the instance authorization popout"
+  },
+  "instanceAuthFormDesc": {
+    "message": "Enter the credentials of the instance you want to authorize via the extension into the form. Then click the 'Link Device' button.\nIf you are already logged into your WhatsApp Web account, log out before authorizing the instance.\nDo not close this window until the synchronization is complete!",
+    "description": "Description for instance authorization popout"
+  },
   "idInstancePlaceholder": {
     "message": "Instance ID",
     "description": "Placeholder for the instance id input"
