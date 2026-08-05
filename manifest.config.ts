@@ -7,7 +7,7 @@ export default defineManifest({
   manifest_version: 3,
   name: '__MSG_extName__',
   default_locale: 'en',
-  version: '1.0.0',
+  version: '1.1.0',
   permissions: ['scripting', 'tabs', 'browsingData'],
   host_permissions: ['https://web.whatsapp.com/*', ...APP_HOSTS],
   background: { 
