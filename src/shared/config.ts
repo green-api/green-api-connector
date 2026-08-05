@@ -10,7 +10,7 @@ const DEV_MODE = false;
 export function getTrustedHosts(): string[] {
   const allowedHosts = [...TRUSTED_DOMAINS.map((domain) => `https://*.${domain}/*`)];
   if (DEV_MODE){
-    allowedHosts.push(`http://localhost/*`, "file://*")
+    allowedHosts.push(`http://localhost/*`, "file:///*")
   }
   return allowedHosts;
 }
