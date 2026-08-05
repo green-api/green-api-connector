@@ -1,21 +1,6 @@
-import { useEffect } from 'react';
 import { InstanceForm } from './InstanceForm';
-import { CONNECTOR_SOURCE } from '../shared/config';
-
-function cancelOnClose() {
-  const messageEvent = new MessageEvent('message', {
-    data: { target: CONNECTOR_SOURCE, type: 'CANCEL_IMPORT' },
-    source: window,
-  });
-  window.dispatchEvent(messageEvent);
-}
 
 export function App() {
-  useEffect(() => {
-    window.addEventListener('pagehide', cancelOnClose)
-    return () => window.removeEventListener('pagehide', cancelOnClose)
-  })
-
   return (
     <div
       style={{

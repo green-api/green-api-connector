@@ -118,7 +118,7 @@ function sendImportResponse(tabId: number | null, message: unknown): void {
   chrome.tabs.sendMessage(tabId, payload, () => { void chrome.runtime.lastError })
 }
 
-function isFromOwnExtension(sender: chrome.runtime.MessageSender) {
+export function isFromOwnExtension(sender: chrome.runtime.MessageSender) {
   return sender.id === chrome.runtime.id && (sender.url ?? '').startsWith(chrome.runtime.getURL(''));
 }
 
@@ -434,7 +434,7 @@ async function clearAndContinue(): Promise<void> {
   await reloadTab(state.tabId)
 }
 
-async function cancelImport(): Promise<void> {
+export async function cancelImport(): Promise<void> {
   const state = pending
   if (!state) return
 
