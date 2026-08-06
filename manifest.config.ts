@@ -7,10 +7,14 @@ export default defineManifest({
   manifest_version: 3,
   name: '__MSG_extName__',
   default_locale: 'en',
-  version: '1.0.0',
+  version: '1.1.0',
   permissions: ['scripting', 'tabs', 'browsingData'],
   host_permissions: ['https://web.whatsapp.com/*', ...APP_HOSTS],
-  background: { service_worker: 'src/background/index.ts', type: 'module' },
+  background: { 
+    service_worker: 'src/background/index.ts',
+    type: 'module',
+    scripts: ['src/background/index.ts'],
+  },
   action: {
     default_popup: 'index.html',
     default_icon: {
@@ -38,5 +42,11 @@ export default defineManifest({
     32: 'icons/icon32.png',
     48: 'icons/icon48.png',
     128: 'icons/icon128.png',
+  },
+  browser_specific_settings: {
+    gecko: {
+      id: "@green-api-connector",
+      strict_min_version: '128.0',
+    },
   },
 })

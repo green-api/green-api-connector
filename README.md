@@ -15,9 +15,14 @@ The extension opens a separate WhatsApp Web window for authorization, after whic
     npm install
     ```
 2. Build the extension
-    ```bash
-    npm run build
-    ```
+    * Chrome:
+        ```bash
+        npm run build
+        ```
+    * Firefox:
+        ```bash
+        npm run build:firefox
+        ```
 3. The unpacked browser extension will be in the `dist/` folder
 
 ## Quick Start
@@ -110,4 +115,4 @@ To use your own logo, you must replace the files in the `public/icons` folder
 The title and description text in the extension menu are displayed based on data from the `public/_locales` folder
 
 ### Colors
-You can change the color palette via the CSS file [src/popup/theme.css](src/popup/theme.css)
+You can change the color palette via the CSS file [src/shared/theme.css](src/shared/theme.css)

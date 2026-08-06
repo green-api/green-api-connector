@@ -1,8 +1,14 @@
-import { InstanceForm } from './InstanceForm';
+import Icon from '@mdi/react';
+import { mdiArrowTopRightBoldBoxOutline } from '@mdi/js';
 
 export function App() {
   const extName = chrome.i18n.getMessage('extName');
   const extDescription = chrome.i18n.getMessage('extDescription');
+
+  const openInstanceAuthPopup = async () => {
+    await chrome.runtime.sendMessage({ type: "OPEN_POPOUT" });
+    window.close();
+  };
 
   return (
     <div
@@ -24,7 +30,22 @@ export function App() {
         {extName}
       </h3>
       <p style={{ margin: '0 0 12px 0', color: 'var(--secondary-color)' }}>{extDescription}</p>
-      <InstanceForm />
+      <button 
+        onClick={() => openInstanceAuthPopup()} 
+        className="link-button" 
+        style={{ 
+          width: "100%"
+        }}
+      >
+        {chrome.i18n.getMessage('openInstanceAuthForm')}
+        <Icon 
+          path={mdiArrowTopRightBoldBoxOutline} 
+          size={0.75} 
+          style={{
+            marginLeft: "5px"
+          }}
+        />
+      </button>
     </div>
   )
 }

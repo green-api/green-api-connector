@@ -1,4 +1,5 @@
-import { CONNECTOR_SOURCE as SOURCE, isTrustedOrigin } from '../shared/config'
+import { CONNECTOR_SOURCE, isTrustedOrigin } from '../shared/config'
+import './popout'
 
 export { }
 
@@ -83,20 +84,44 @@ function closeTab(tabId: number): Promise<void> {
   })
 }
 
+declare const __BROWSER__: 'chrome' | 'firefox'
+function getRemovalOptions(origin: string) {
+  if (__BROWSER__ === 'firefox') {
+    const hostname = new URL(origin).hostname
+    return { hostnames: [hostname] }
+  }
+  return { origins: [origin] }
+}
+
+function getDataTypeSet(): chrome.browsingData.DataTypeSet {
+  if (__BROWSER__ === 'firefox') {
+    return {
+      cookies: true,
+      indexedDB: true,
+      localStorage: true,
+      serviceWorkers: true
+    }
+  }
+
+  return {
+    cacheStorage: true,
+    cookies: true,
+    fileSystems: true,
+    indexedDB: true,
+    localStorage: true,
+    serviceWorkers: true,
+    webSQL: true,
+  }
+}
+
 function removeBrowsingData(origin: string): Promise<void> {
   return new Promise((resolve) => {
     try {
+      const removalOptions = getRemovalOptions(origin);
+      const dataTypeSet = getDataTypeSet();
       chrome.browsingData.remove(
-        { origins: [origin] },
-        {
-          cacheStorage: true,
-          cookies: true,
-          fileSystems: true,
-          indexedDB: true,
-          localStorage: true,
-          serviceWorkers: true,
-          webSQL: true,
-        },
+        removalOptions,
+        dataTypeSet,
         () => {
           const err = chrome.runtime.lastError
           resolve()
@@ -109,7 +134,7 @@ function removeBrowsingData(origin: string): Promise<void> {
 }
 
 function sendImportResponse(tabId: number | null, message: unknown): void {
-  const payload = { source: SOURCE, ...(message as object) }
+  const payload = { source: CONNECTOR_SOURCE, ...(message as object) }
   if (!tabId) {
     chrome.runtime.sendMessage(payload, () => { void chrome.runtime.lastError })
     return
@@ -117,8 +142,17 @@ function sendImportResponse(tabId: number | null, message: unknown): void {
   chrome.tabs.sendMessage(tabId, payload, () => { void chrome.runtime.lastError })
 }
 
-function isFromOwnExtension(sender: chrome.runtime.MessageSender) {
-  return sender.id === chrome.runtime.id && sender.tab === undefined;
+function isExtensionUrl(url: string) {
+  const extensionUrl = chrome.runtime.getURL('');
+  return url.startsWith(extensionUrl)
+}
+
+export function isFromOwnExtension(sender: chrome.runtime.MessageSender) {
+  if (!sender.url){
+    return false;
+  }
+
+  return sender.id === chrome.runtime.id && isExtensionUrl(sender.url);
 }
 
 async function readExistingSessionJid(tabId: number): Promise<string | null> {
@@ -433,7 +467,7 @@ async function clearAndContinue(): Promise<void> {
   await reloadTab(state.tabId)
 }
 
-async function cancelImport(): Promise<void> {
+export async function cancelImport(): Promise<void> {
   const state = pending
   if (!state) return
 
@@ -485,7 +519,12 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (typeof message !== 'object' || message === null) return undefined
-  if (!isTrustedOrigin(sender.origin ?? sender.url) && !isFromOwnExtension(sender)) return undefined
+  
+  let origin = sender.origin;
+  if (!origin || origin === "null"){
+    origin = sender.url
+  }
+  if (!isTrustedOrigin(origin) && !isFromOwnExtension(sender)) return undefined
 
   const candidate = message as Record<string, unknown>
   const originTabId = sender.tab?.id ?? null

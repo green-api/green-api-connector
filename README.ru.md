@@ -15,9 +15,14 @@
     npm install 
     ```
 2. Собрать расширение
-    ```bash
-    npm run build
-    ```
+    * Chrome:
+      ```bash
+      npm run build
+      ```
+    * Firefox:
+      ```bash
+      npm run build:firefox
+      ```
 3. Распакованное расширение для бразуера будет в папке `dist/`
 
 ## Быстрый старт
@@ -110,4 +115,4 @@ window.postMessage({target:"green-api-connector", type:"START_PASSKEY_IMPORT", u
 Текст заголовка и описания в меню расширения отображается на основе данных из папки `public/_locales`
 
 ### Цвета
-Палитру цветов можно поменять через CSS файл [src/popup/theme.css](src/popup/theme.css)
+Палитру цветов можно поменять через CSS файл [src/shared/theme.css](src/shared/theme.css)
