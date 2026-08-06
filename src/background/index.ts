@@ -84,20 +84,44 @@ function closeTab(tabId: number): Promise<void> {
   })
 }
 
+declare const __BROWSER__: 'chrome' | 'firefox'
+function getRemovalOptions(origin: string) {
+  if (__BROWSER__ === 'firefox') {
+    const hostname = new URL(origin).hostname
+    return { hostnames: [hostname] }
+  }
+  return { origins: [origin] }
+}
+
+function getDataTypeSet(): chrome.browsingData.DataTypeSet {
+  if (__BROWSER__ === 'firefox') {
+    return {
+      cookies: true,
+      indexedDB: true,
+      localStorage: true,
+      serviceWorkers: true
+    }
+  }
+
+  return {
+    cacheStorage: true,
+    cookies: true,
+    fileSystems: true,
+    indexedDB: true,
+    localStorage: true,
+    serviceWorkers: true,
+    webSQL: true,
+  }
+}
+
 function removeBrowsingData(origin: string): Promise<void> {
   return new Promise((resolve) => {
     try {
+      const removalOptions = getRemovalOptions(origin);
+      const dataTypeSet = getDataTypeSet();
       chrome.browsingData.remove(
-        { origins: [origin] },
-        {
-          cacheStorage: true,
-          cookies: true,
-          fileSystems: true,
-          indexedDB: true,
-          localStorage: true,
-          serviceWorkers: true,
-          webSQL: true,
-        },
+        removalOptions,
+        dataTypeSet,
         () => {
           const err = chrome.runtime.lastError
           resolve()

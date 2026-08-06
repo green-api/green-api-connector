@@ -16,4 +16,7 @@ export default defineConfig({
             },
         },
     },
+    define: {
+        __BROWSER__: JSON.stringify(target)
+    }
 })
