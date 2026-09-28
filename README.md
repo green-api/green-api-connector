@@ -15,14 +15,10 @@ The extension opens a separate WhatsApp Web window for authorization, after whic
     npm install
     ```
 2. Build the extension
-    * Chrome:
-        ```bash
-        npm run build
-        ```
-    * Firefox:
-        ```bash
-        npm run build:firefox
-        ```
+    ```bash
+    npm run build
+    ```
+    The build produces a single MV3 artifact that works in both Chrome and Firefox
 3. The unpacked browser extension will be in the `dist/` folder
 
 ## Quick Start
@@ -45,13 +41,14 @@ Example request payload:
 
 Possible values for the `type` field:
 * `PING` - checks that the extension is installed and available on the page
-* `START_PASSKEY_IMPORT` - starts the authorization process. You must add the endpoint URL to the `url` field, where the [authorization data](#how-to-use-authorization-data) will be sent
+* `START_IMPORT` - starts the authorization process. You must add the endpoint URL to the `url` field, where the [authorization data](#how-to-use-authorization-data) will be sent
+* `START_PASSKEY_IMPORT` - same as `START_IMPORT` (backward capability)
 * `CLEAR_AND_CONTINUE` - clears any existing data and starts the authorization process. Can be used if a [response](#incoming-requests) with the `EXISTING_SESSION` type was received to force the authorization process to start
 * `CANCEL_IMPORT` - cancel the authorization process. If a window with the web version was previously open, it will be closed
 
 Example of a request in code:
 ```js
-window.postMessage({target:"green-api-connector", type:"START_PASSKEY_IMPORT", url:"https://example.com"}, '*')
+window.postMessage({target:"green-api-connector", type:"START_IMPORT", url:"https://example.com"}, '*')
 ```
 
 ### Incoming Requests
@@ -86,7 +83,7 @@ Possible values for the `type` field:
 
 ## How to Use Authorization Data
 
-To authorize on an instance, you must specify a URL in the following format when making a `START_PASSKEY_IMPORT` request:
+To authorize on an instance, you must specify a URL in the following format when making a `START_IMPORT` request:
 ```
 https://api.green-api.com/waInstance{{idInstance}}/setAuthCreds/{{apiTokenInstance}}
 ```
@@ -95,10 +92,16 @@ https://api.green-api.com/waInstance{{idInstance}}/setAuthCreds/{{apiTokenInstan
 
 Example:
 ```js
-window.postMessage({target:"green-api-connector", type:"START_PASSKEY_IMPORT", url:"https://api.green-api.com/waInstance110501234567/setAuthCreds/Jg9ktxJ5d7pfWVT9Whar9qxmVVPMLN4d49C8nmpbjXyNeYq54b"}, '*')
+window.postMessage({target:"green-api-connector", type:"START_IMPORT", url:"https://api.green-api.com/waInstance110501234567/setAuthCreds/Jg9ktxJ5d7pfWVT9Whar9qxmVVPMLN4d49C8nmpbjXyNeYq54b"}, '*')
 ```
 
 When using your own backend server, you must proxy the data received from the extension to the target instance.
+
+## Choosing a messenger at build time
+
+The extension's messenger-specific logic lives in `src/packages/<name>/` and is selected at build time via the `MESSENGER` environment variable:
+* `npm run build` - builds the extension with the default messenger (`whatsapp`)
+* `npm run build:whatsapp` - explicitly builds with the `whatsapp` messenger
 
 ## How to customize the extension
 

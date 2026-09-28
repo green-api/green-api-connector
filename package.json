@@ -1,25 +1,25 @@
 {
   "name": "@green-api/connector-extension",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:firefox": "cross-env TARGET=firefox vite build",
-    "build:chrome": "cross-env TARGET=chrome vite build"
+    "build:whatsapp": "cross-env MESSENGER=whatsapp vite build"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",
     "@mdi/react": "^1.6.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "webextension-polyfill": "^0.12.0"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.28",
-    "@types/chrome": "^0.0.280",
     "@types/node": "^26.1.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@types/webextension-polyfill": "^0.12.6",
     "@vitejs/plugin-react": "^4.3.3",
     "cross-env": "^10.1.0",
     "typescript": "^5.6.3",

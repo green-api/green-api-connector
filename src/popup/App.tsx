@@ -1,12 +1,13 @@
+import browser from 'webextension-polyfill';
 import Icon from '@mdi/react';
 import { mdiArrowTopRightBoldBoxOutline } from '@mdi/js';
 
 export function App() {
-  const extName = chrome.i18n.getMessage('extName');
-  const extDescription = chrome.i18n.getMessage('extDescription');
+  const extName = browser.i18n.getMessage('extName');
+  const extDescription = browser.i18n.getMessage('extDescription');
 
   const openInstanceAuthPopup = async () => {
-    await chrome.runtime.sendMessage({ type: "OPEN_POPOUT" });
+    await browser.runtime.sendMessage({ type: "OPEN_POPOUT" });
     window.close();
   };
 
@@ -37,7 +38,7 @@ export function App() {
           width: "100%"
         }}
       >
-        {chrome.i18n.getMessage('openInstanceAuthForm')}
+        {browser.i18n.getMessage('openInstanceAuthForm')}
         <Icon 
           path={mdiArrowTopRightBoldBoxOutline} 
           size={0.75} 

@@ -15,15 +15,11 @@
     npm install 
     ```
 2. Собрать расширение
-    * Chrome:
-      ```bash
-      npm run build
-      ```
-    * Firefox:
-      ```bash
-      npm run build:firefox
-      ```
-3. Распакованное расширение для бразуера будет в папке `dist/`
+    ```bash
+    npm run build
+    ```
+    Сборка даёт единый MV3-артефакт, который работает и в Chrome, и в Firefox.
+3. Распакованное расширение для браузера будет в папке `dist/`
 
 ## Быстрый старт
 
@@ -45,13 +41,14 @@
 
 Возможные значения поля `type`:
 * `PING` - проверка что расширение установлено и доступно на странице
-* `START_PASSKEY_IMPORT` - запустить процесс авторизации. Необходимо добавить URL endpoint в поле `url` куда будут отправлены [данные авторизации](#как-использовать-данные-авторизации) 
+* `START_IMPORT` - запустить процесс авторизации. Необходимо добавить URL endpoint в поле `url` куда будут отправлены [данные авторизации](#как-использовать-данные-авторизации) 
+* `START_PASSKEY_IMPORT` - тоже самое что и `START_IMPORT` (обратная совместимость)
 * `CLEAR_AND_CONTINUE` - очистить данные, если они существуют и запустить процесс авторизации. Можно использовать если был получен [ответ](#входящие-запросы) с типом `EXISTING_SESSION`, чтобы принудительно начать процесс авторизации
 * `CANCEL_IMPORT` - отменить процесс авторизации. Если ранее было открыто окно с Web версией, оно будет закрыто
 
 Пример запроса в коде:
 ```js
-window.postMessage({target:"green-api-connector", type:"START_PASSKEY_IMPORT", url:"https://example.com"}, '*')
+window.postMessage({target:"green-api-connector", type:"START_IMPORT", url:"https://example.com"}, '*')
 ```
 
 ### Входящие запросы
@@ -86,7 +83,7 @@ window.addEventListener('message', (event) => {
 
 ## Как использовать данные авторизации
 
-Для авторизации на инстансе необходимо при запросе `START_PASSKEY_IMPORT` указать url в формате: 
+Для авторизации на инстансе необходимо при запросе `START_IMPORT` указать url в формате: 
 ```
 https://api.green-api.com/waInstance{{idInstance}}/setAuthCreds/{{apiTokenInstance}}
 ```
@@ -95,10 +92,16 @@ https://api.green-api.com/waInstance{{idInstance}}/setAuthCreds/{{apiTokenInstan
 
 Например:
 ```js
-window.postMessage({target:"green-api-connector", type:"START_PASSKEY_IMPORT", url:"https://api.green-api.com/waInstance110501234567/setAuthCreds/Jg9ktxJ5d7pfWVT9Whar9qxmVVPMLN4d49C8nmpbjXyNeYq54b"}, '*')
+window.postMessage({target:"green-api-connector", type:"START_IMPORT", url:"https://api.green-api.com/waInstance110501234567/setAuthCreds/Jg9ktxJ5d7pfWVT9Whar9qxmVVPMLN4d49C8nmpbjXyNeYq54b"}, '*')
 ```
 
 При использовании своего backend сервера необходимо проксировать данные полученные от расширения на нужный инстанс.
+
+## Выбор мессенджера на этапе сборки
+
+Логика, специфичная для конкретного мессенджера (например, WhatsApp Web), лежит в `src/packages/<name>/` и выбирается на этапе сборки через переменную окружения `MESSENGER`:
+* `npm run build` - собирает расширение с мессенджером по умолчанию (`whatsapp`)
+* `npm run build:whatsapp` - явно собирает расширение с мессенджером `whatsapp`
 
 ## Как кастомизировать расширение
 

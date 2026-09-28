@@ -4,7 +4,7 @@
     "description": "Extension name"
   },
   "extDescription": {
-    "message": "An extension for completing passkey authentication for your WhatsApp instance. Read the documentation for more details about the extension.",
+    "message": "An extension for completing authentication for your instance. Read the documentation for more details about the extension.",
     "description": "Extension description"
   },
   "openInstanceAuthForm": {
@@ -12,7 +12,7 @@
     "description": "Button to open the instance authorization popout"
   },
   "instanceAuthFormDesc": {
-    "message": "Enter the credentials of the instance you want to authorize via the extension into the form. Then click the 'Link Device' button.\nIf you are already logged into your WhatsApp Web account, log out before authorizing the instance.\nDo not close this window until the synchronization is complete!",
+    "message": "Enter the credentials of the instance you want to authorize via the extension into the form. Then click the 'Link Device' button.\nIf you are already logged into the web version, log out before authorizing the instance.\nDo not close this window until the synchronization is complete!",
     "description": "Description for instance authorization popout"
   },
   "idInstancePlaceholder": {
@@ -28,19 +28,27 @@
     "description": "Submit button label"
   },
   "formMsgAlreadyInProgress": {
-    "message": "Complete the previous authorization process or close the WhatsApp Web tab", 
-    "description": "Import error: another import already running" 
+    "message": "Complete the previous authorization process or close the web version tab",
+    "description": "Import error: another import already running"
   },
-  "formMsgUnexpectedError": { 
-    "message": "An unexpected error occurred", 
-    "description": "Import error: unexpected failure" 
+  "formMsgUnexpectedError": {
+    "message": "An unexpected error occurred",
+    "description": "Import error: unexpected failure"
   },
-  "formMsgExistingSession": { 
-    "message": "You are already logged in to WhatsApp Web. Log out of your WhatsApp account and try again", 
-    "description": "Existing WhatsApp session detected" 
+  "formMsgExistingSession": {
+    "message": "You are already logged in to the web version. Log out of the web version and try again",
+    "description": "Existing web version session detected"
   },
-  "formMsgImportSent": { 
-    "message": "The authentication data was sent to the instance", 
-    "description": "Import completed successfully" 
+  "formMsgImportSent": {
+    "message": "The authentication data was sent to the instance",
+    "description": "Import completed successfully"
+  },
+  "formMsgImportFailed": {
+    "message": "Authorization could not be completed, please try again",
+    "description": "Import error: unknown or unhandled failure reason"
+  },
+  "formMsgInstanceHasCreds": {
+    "message": "The instance already has different authorization credentials",
+    "description": "Import error: HTTP 409, instance already has different auth credentials"
   }
 }
