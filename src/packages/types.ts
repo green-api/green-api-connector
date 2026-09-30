@@ -12,7 +12,9 @@ export interface ImportContext {
 }
 
 export interface MessengerSession {
-  onTabReady(): Promise<void>
+  start(): Promise<void>
+  // The orchestrator calls this only after the session emitted EXISTING_SESSION, and at most
+  // once per such event - so a driver must not guard against unsolicited or repeated calls itself.
   onUserConfirmedClear(): Promise<void>
   cancel(): Promise<void>
 }

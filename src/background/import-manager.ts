@@ -1,4 +1,3 @@
-import { Tabs } from 'webextension-polyfill'
 import { closeTab, createPopup } from '../platform/browser'
 import { driver } from '@messenger'
 import type { ImportContext, MessengerSession } from '../packages/types'
@@ -15,6 +14,7 @@ type ImportState =
       targetTabId: number
       originTabId: number | null
       cancelled: boolean
+      awaitingConsent: boolean
     }
 
 let state: ImportState | null = null
@@ -46,30 +46,31 @@ export async function startImport(endpointUrl: string, originTabId: number | nul
     endpointUrl,
     targetTabId: popup.targetTabId,
     targetWindowId: popup.targetWindowId,
-    emit: (event) => sendImportResponse(originTabId, event),
+    emit: (event) => {
+      if (event.type === 'EXISTING_SESSION' && state?.phase === 'running') {
+        state.awaitingConsent = true
+      }
+      sendImportResponse(originTabId, event)
+    },
     finish: () => {
       void closeTab(popup.targetTabId)
       state = null
     },
   }
 
+  const session = driver.startSession(ctx)
   state = {
     phase: 'running',
-    session: driver.startSession(ctx),
+    session,
     targetTabId: popup.targetTabId,
     originTabId,
     cancelled: false,
+    awaitingConsent: false,
   }
-}
 
-export function handleTabUpdated(tabId: number, changeInfo: Tabs.OnUpdatedChangeInfoType): void {
-  if (changeInfo.status !== 'complete') {
-    return
-  }
-  if (!state || state.phase !== 'running' || state.targetTabId !== tabId) {
-    return
-  }
-  void state.session.onTabReady()
+  session.start().catch((error) => {
+    console.warn('[background/import-manager] session.start failed', { error })
+  })
 }
 
 export function handleTabRemoved(tabId: number): void {
@@ -86,9 +87,10 @@ export function handleTabRemoved(tabId: number): void {
 }
 
 export async function confirmClearAndContinue(): Promise<void> {
-  if (!state || state.phase !== 'running') {
+  if (!state || state.phase !== 'running' || !state.awaitingConsent) {
     return
   }
+  state.awaitingConsent = false
   await state.session.onUserConfirmedClear()
 }
 

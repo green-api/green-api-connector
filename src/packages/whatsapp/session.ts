@@ -1,4 +1,4 @@
-import { focusWindow, reloadTab, removeBrowsingData } from '../../platform/browser'
+import { focusWindow, reloadTab, removeBrowsingData, waitForTabLoad } from '../../platform/browser'
 import { ImportContext, MessengerSession } from '../types'
 import { extractImportedIdentity, isDumpCompleteAndStable } from './dump'
 import { forcePasskeyMode, pollSessionDump, readExistingSessionJid } from './page-scripts'
@@ -14,15 +14,14 @@ export class WhatsAppSession implements MessengerSession {
   private stableCount = 0
   private meJidSeenLastPoll: string | null = null
   private noiseKeyMissingCount = 0
-  private awaitingConsent = false
-  private flowStarted = false
   private pollTimer: ReturnType<typeof setTimeout> | null = null
   private cancelled = false
 
   constructor(private readonly ctx: ImportContext) {}
 
-  public async onTabReady(): Promise<void> {
-    if (this.cancelled || this.awaitingConsent || this.flowStarted)
+  public async start(): Promise<void> {
+    await waitForTabLoad(this.ctx.targetTabId)
+    if (this.cancelled)
       return
 
     const existingJid = await readExistingSessionJid(this.ctx.targetTabId)
@@ -30,7 +29,6 @@ export class WhatsAppSession implements MessengerSession {
       return
 
     if (existingJid) {
-      this.awaitingConsent = true
       this.ctx.emit({ type: 'EXISTING_SESSION', number: existingJid })
       return
     }
@@ -39,18 +37,17 @@ export class WhatsAppSession implements MessengerSession {
   }
 
   public async onUserConfirmedClear(): Promise<void> {
-    if (!this.awaitingConsent)
-      return
-
-    this.awaitingConsent = false
-
     await removeBrowsingData(WA_ORIGIN)
 
     if (this.cancelled)
       return
 
-    this.flowStarted = false
     await reloadTab(this.ctx.targetTabId)
+    await waitForTabLoad(this.ctx.targetTabId)
+    if (this.cancelled)
+      return
+
+    await this.beginPasskeyFlow()
   }
 
   public async cancel(): Promise<void> {
@@ -66,8 +63,6 @@ export class WhatsAppSession implements MessengerSession {
   }
 
   private async beginPasskeyFlow(): Promise<void> {
-    this.flowStarted = true
-
     await focusWindow(this.ctx.targetWindowId)
 
     const maxForceAttempts = 5

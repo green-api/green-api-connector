@@ -7,7 +7,6 @@ import {
   cancelActiveImport,
   confirmClearAndContinue,
   handleTabRemoved,
-  handleTabUpdated,
   startImport,
 } from './import-manager'
 
@@ -68,7 +67,6 @@ function handleOnMessage(message: unknown, sender: MessageSender): void {
   }
 }
 
-browser.tabs.onUpdated.addListener(handleTabUpdated)
 browser.tabs.onRemoved.addListener(handleTabRemoved)
 
 browser.runtime.onInstalled.addListener(reinjectBridgeIntoOpenTabs)

@@ -41,6 +41,37 @@ export async function reloadTab(tabId: number): Promise<void> {
   }
 }
 
+export async function waitForTabLoad(tabId: number, timeoutMs = 60_000): Promise<void> {
+  await new Promise<void>((resolve) => {
+    const finish = () => {
+      clearTimeout(timer)
+      browser.tabs.onUpdated.removeListener(onUpdated)
+      resolve()
+    }
+    const onUpdated = (updatedTabId: number, changeInfo: { status?: string }) => {
+      if (updatedTabId === tabId && changeInfo.status === 'complete')
+        finish()
+    }
+    const timer = setTimeout(() => {
+      console.warn('[platform/browser] waitForTabLoad timed out', { tabId, timeoutMs })
+      finish()
+    }, timeoutMs)
+
+    // Subscribe before checking the current status, otherwise 'complete' fired in between is lost.
+    browser.tabs.onUpdated.addListener(onUpdated)
+    browser.tabs.get(tabId).then(
+      (tab) => {
+        if (tab.status === 'complete')
+          finish()
+      },
+      (error) => {
+        console.warn('[platform/browser] waitForTabLoad failed', { tabId, error })
+        finish()
+      },
+    )
+  })
+}
+
 export async function removeBrowsingData(origin: string): Promise<void> {
   try {
     await browser.browsingData.remove(getRemovalOptions(origin), getDataTypeSet())

@@ -3,29 +3,34 @@ import { ImportContext, MessengerSession } from '../types'
 
 // TODO: replace with real driver-specific state. All state for the import process belongs
 // here, as private fields on the session - the orchestrator that owns ImportContext never
-// looks inside a session and never keeps track of import progress itself.
+// looks inside a session and never keeps track of import progress itself (the only thing it
+// tracks is whether EXISTING_SESSION was emitted, to gate onUserConfirmedClear).
 export class TemplateSession implements MessengerSession {
   private cancelled = false
   private pollTimer: ReturnType<typeof setTimeout> | null = null
 
   constructor(private readonly ctx: ImportContext) {}
 
-  // Called once the popup tab has finished loading the messenger's page.
+  // Called exactly once, right after the popup is created - the tab may still be loading,
+  // so the session waits for it itself.
   // TODO: kick off whatever detection/polling the real messenger needs, then report
   // progress via `this.ctx.emit(...)` and completion via `this.ctx.finish()`.
-  public async onTabReady(): Promise<void> {
-    if (this.cancelled)
-      return
-
+  public async start(): Promise<void> {
     // Example shape, mirroring the whatsapp package:
+    // await waitForTabLoad(this.ctx.targetTabId)
+    // if (this.cancelled)
+    //   return
     // const dump = await pollSessionDump(this.ctx.targetTabId)
     // ... decide whether the dump is complete/stable, then either poll again or submit it.
-    throw new Error('TemplateSession.onTabReady is not implemented')
+    throw new Error('TemplateSession.start is not implemented')
   }
 
   // Called when the user has confirmed clearing an existing session detected via an
-  // { type: 'EXISTING_SESSION' } event emitted from onTabReady. Real messengers typically
-  // wipe the site's browsing data here and reload the tab to start a fresh login flow.
+  // { type: 'EXISTING_SESSION' } event emitted from start. Real messengers typically
+  // wipe the site's browsing data here, reload the tab, await waitForTabLoad and continue
+  // the login flow right there - start() is not called again.
+  // The orchestrator already guarantees this is called only after EXISTING_SESSION was
+  // emitted, and once per event - no consent guard is needed here.
   // TODO: implement, using src/platform/browser.ts helpers (removeBrowsingData, reloadTab) -
   // never call browser.* directly, those helpers log failures and keep the import flow going.
   public async onUserConfirmedClear(): Promise<void> {
