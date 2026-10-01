@@ -1,7 +1,7 @@
 // Маркер, который web страница будет должна использовать при отправке событий через postMessage()
 export const CONNECTOR_SOURCE = 'green-api-connector' as const
 
-// Домены на которых расширение будет слушать события PING, START_PASSKEY_IMPORT и т.д. 
+// Домены на которых расширение будет слушать события PING, START_IMPORT и т.д. 
 export const TRUSTED_DOMAINS = ['green-api.com', 'greenapi.com'] as const
 
 // Добавляет localhost в список доверенных хостов. Рекомендуется выключить при публикации приложения. 

@@ -1,3 +1,4 @@
+import browser from 'webextension-polyfill'
 import { CONNECTOR_SOURCE as SOURCE } from '../shared/config'
 
 export {}
@@ -10,6 +11,7 @@ declare global {
 
 type PageToBridgeMessage =
   | { target: typeof SOURCE; type: 'PING' }
+  | { target: typeof SOURCE; type: 'START_IMPORT'; url: string }
   | { target: typeof SOURCE; type: 'START_PASSKEY_IMPORT'; url: string }
   | { target: typeof SOURCE; type: 'CLEAR_AND_CONTINUE' }
   | { target: typeof SOURCE; type: 'CANCEL_IMPORT' }
@@ -29,6 +31,7 @@ function isPageToBridgeMessage(data: unknown): data is PageToBridgeMessage {
   
   return (
     candidate.type === 'PING' ||
+    candidate.type === 'START_IMPORT' ||
     candidate.type === 'START_PASSKEY_IMPORT' ||
     candidate.type === 'CLEAR_AND_CONTINUE' ||
     candidate.type === 'CANCEL_IMPORT'
@@ -56,14 +59,15 @@ function handlePageMessage(event: MessageEvent): void {
     case 'PING':
       announce()
       return
+    case 'START_IMPORT':
     case 'START_PASSKEY_IMPORT':
-      chrome.runtime.sendMessage({ type: 'START_PASSKEY_IMPORT', url: message.url })
+      browser.runtime.sendMessage({ type: message.type, url: message.url }).catch(() => {})
       return
     case 'CLEAR_AND_CONTINUE':
-      chrome.runtime.sendMessage({ type: 'CLEAR_AND_CONTINUE' })
+      browser.runtime.sendMessage({ type: 'CLEAR_AND_CONTINUE' }).catch(() => {})
       return
     case 'CANCEL_IMPORT':
-      chrome.runtime.sendMessage({ type: 'CANCEL_IMPORT' })
+      browser.runtime.sendMessage({ type: 'CANCEL_IMPORT' }).catch(() => {})
       return
   }
 }
@@ -98,7 +102,7 @@ function init(): void {
   window.__connectorBridge = true
 
   window.addEventListener('message', handlePageMessage)
-  chrome.runtime.onMessage.addListener((message) => {
+  browser.runtime.onMessage.addListener((message: unknown) => {
     handleWorkerMessage(message)
   })
 
