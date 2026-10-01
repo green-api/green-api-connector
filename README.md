@@ -44,6 +44,7 @@ Possible values for the `type` field:
 * `START_IMPORT` - starts the authorization process. You must add the endpoint URL to the `url` field, where the [authorization data](#how-to-use-authorization-data) will be sent
 * `START_PASSKEY_IMPORT` - same as `START_IMPORT` (backward capability)
 * `CLEAR_AND_CONTINUE` - clears any existing data and starts the authorization process. Can be used if a [response](#incoming-requests) with the `EXISTING_SESSION` type was received to force the authorization process to start
+* `KEEP_AND_CONTINUE` - uses the existing session without clearing any data. Sent in response to the `EXISTING_SESSION` event as an alternative to `CLEAR_AND_CONTINUE`: only one of the two takes effect
 * `CANCEL_IMPORT` - cancel the authorization process. If a window with the web version was previously open, it will be closed
 
 Example of a request in code:
@@ -80,6 +81,9 @@ Possible values for the `type` field:
   * `import_already_in_progress` - the authorization process is already running
   * `tab_closed` - the authorization tab was closed before authorization was completed
   * `unexpected_error` - an unexpected error occurred during the authorization process
+  * `network` - failed to send the data to the endpoint specified in `url`
+  * `http_error` - the server responded with an error. The message additionally includes the `httpStatus` field with the response status code
+  * `timeout` - the authorization data did not appear within the allotted time
 
 ## How to Use Authorization Data
 

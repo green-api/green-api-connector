@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:whatsapp": "cross-env MESSENGER=whatsapp vite build"
+    "build:whatsapp": "cross-env MESSENGER=whatsapp vite build",
+    "build:max": "cross-env MESSENGER=max vite build"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",
