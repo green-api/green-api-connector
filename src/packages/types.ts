@@ -13,9 +13,12 @@ export interface ImportContext {
 
 export interface MessengerSession {
   start(): Promise<void>
-  // The orchestrator calls this only after the session emitted EXISTING_SESSION, and at most
-  // once per such event - so a driver must not guard against unsolicited or repeated calls itself.
+  // onUserConfirmedClear and onUserConfirmedKeep are the two branches of one choice. The
+  // orchestrator calls one of them only after the session emitted EXISTING_SESSION, exactly
+  // once and mutually exclusively: whichever message arrives first wins, the other is never
+  // called. A driver must not guard against unsolicited or repeated calls itself.
   onUserConfirmedClear(): Promise<void>
+  onUserConfirmedKeep(): Promise<void>
   cancel(): Promise<void>
 }
 
@@ -33,7 +36,10 @@ export function isImportEvent(value: unknown): value is ImportEvent {
     case 'EXISTING_SESSION':
       return typeof candidate.number === 'string'
     case 'IMPORT_SENT':
-      return true
+      return (
+        (candidate.name === null || typeof candidate.name === 'string') &&
+        (candidate.number === null || typeof candidate.number === 'string')
+      )
     case 'IMPORT_ERROR':
       return (
         typeof candidate.reason === 'string' &&

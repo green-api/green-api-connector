@@ -34,7 +34,18 @@ export class TemplateSession implements MessengerSession {
   // TODO: implement, using src/platform/browser.ts helpers (removeBrowsingData, reloadTab) -
   // never call browser.* directly, those helpers log failures and keep the import flow going.
   public async onUserConfirmedClear(): Promise<void> {
-    throw new Error('TemplateSession.onUserConfirmedClear is not implemented')
+    this.ctx.emit({ type: 'IMPORT_ERROR', reason: 'unexpected_error' })
+    this.ctx.finish()
+  }
+
+  // The second branch of the same fork: after EXISTING_SESSION the orchestrator calls exactly
+  // one of onUserConfirmedClear (wipe and log in from scratch) or onUserConfirmedKeep (use the
+  // existing session as is). Like the clear branch, it is never called twice or together with it.
+  // TODO: implement - no wipe and no reload, go straight to collecting the dump of the
+  // already logged-in session.
+  public async onUserConfirmedKeep(): Promise<void> {
+    this.ctx.emit({ type: 'IMPORT_ERROR', reason: 'unexpected_error' })
+    this.ctx.finish()
   }
 
   // Called by the orchestrator to stop the session, e.g. because the user closed the popup.

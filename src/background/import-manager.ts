@@ -94,6 +94,14 @@ export async function confirmClearAndContinue(): Promise<void> {
   await state.session.onUserConfirmedClear()
 }
 
+export async function confirmKeepAndContinue(): Promise<void> {
+  if (!state || state.phase !== 'running' || !state.awaitingConsent) {
+    return
+  }
+  state.awaitingConsent = false
+  await state.session.onUserConfirmedKeep()
+}
+
 export async function cancelActiveImport(): Promise<void> {
   if (!state) {
     return

@@ -50,6 +50,11 @@ export class WhatsAppSession implements MessengerSession {
     await this.beginPasskeyFlow()
   }
 
+  public async onUserConfirmedKeep(): Promise<void> {
+    this.ctx.emit({ type: 'IMPORT_ERROR', reason: 'unexpected_error' })
+    this.ctx.finish()
+  }
+
   public async cancel(): Promise<void> {
     this.cancelled = true
     this.clearPollTimer()
