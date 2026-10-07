@@ -2,12 +2,14 @@ import { readFileSync } from 'node:fs'
 import { defineManifest } from '@crxjs/vite-plugin'
 import { getTrustedHosts } from './src/shared/config'
 import { manifestContribution as whatsappManifest } from './src/packages/whatsapp/manifest'
+import { manifestContribution as maxManifest } from './src/packages/max/manifest'
 
 const APP_HOSTS = getTrustedHosts()
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8'))
 
 const MESSENGER_MANIFESTS = {
   whatsapp: whatsappManifest,
+  max: maxManifest
 }
 
 function getMessengerManifest(selectedMessenger: string) {
