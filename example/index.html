@@ -39,9 +39,10 @@
       <div>
         <label for="url-input">URL на который будут отправленные данные авторизации</label>
         <input id="url-input" class="input" type="text" placeholder="https://example.com">
-        <button id="btn-start-auth" class="btn">Начать авторизацию (START_PASSKEY_IMPORT)</button>
+        <button id="btn-start-auth" class="btn">Начать авторизацию (START_IMPORT)</button>
       </div>
       <button id="btn-clear" class="btn">Очистить данные (CLEAR_AND_CONTINUE)</button>
+      <button id="btn-keep" class="btn">Использовать текущую сессию (KEEP_AND_CONTINUE)</button>
       <button id="btn-cancel" class="btn">Отменить импорт (CANCEL_IMPORT)</button>
     </div>
 
@@ -72,7 +73,7 @@
       var urlInput = document.getElementById('url-input');
       document.getElementById('btn-start-auth').addEventListener('click', function () {
         const url = urlInput.value.trim()
-        let payload = {target: EXTENSION_SOURCE, type: "START_PASSKEY_IMPORT", url: url};
+        let payload = {target: EXTENSION_SOURCE, type: "START_IMPORT", url: url};
 
         window.postMessage(payload, '*')
         appendLog('out', JSON.stringify(payload));
@@ -80,6 +81,13 @@
 
       document.getElementById('btn-clear').addEventListener('click', function () {
         let payload = {target: EXTENSION_SOURCE, type: "CLEAR_AND_CONTINUE"};
+
+        window.postMessage(payload, '*')
+        appendLog('out', JSON.stringify(payload));
+      });
+
+      document.getElementById('btn-keep').addEventListener('click', function () {
+        let payload = {target: EXTENSION_SOURCE, type: "KEEP_AND_CONTINUE"};
 
         window.postMessage(payload, '*')
         appendLog('out', JSON.stringify(payload));

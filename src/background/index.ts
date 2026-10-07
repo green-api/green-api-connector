@@ -6,6 +6,7 @@ import { isFromOwnExtension } from './messaging'
 import {
   cancelActiveImport,
   confirmClearAndContinue,
+  confirmKeepAndContinue,
   handleTabRemoved,
   startImport,
 } from './import-manager'
@@ -58,6 +59,9 @@ function handleOnMessage(message: unknown, sender: MessageSender): void {
     }
     case 'CLEAR_AND_CONTINUE':
       void confirmClearAndContinue()
+      return
+    case 'KEEP_AND_CONTINUE':
+      void confirmKeepAndContinue()
       return
     case 'CANCEL_IMPORT':
       void cancelActiveImport()
