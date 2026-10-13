@@ -15,6 +15,14 @@
     "message": "Enter the credentials of the instance you want to authorize via the extension into the form. Then click the 'Link Device' button.\nIf you are already logged into the web version, log out before authorizing the instance.\nDo not close this window until the synchronization is complete!",
     "description": "Description for instance authorization popout"
   },
+  "customUrlFormDesc": {
+    "message": "Enter the URL the extension should send the authentication data to. Then click the 'Link Device' button.\nIf you are already logged into the web version of the messenger, log out before continuing.\nDo not close this window until the synchronization is complete!",
+    "description": "Description for custom URL authorization popout"
+  },
+  "customUrlPlaceholder": {
+    "message": "URL to send the authentication data to",
+    "description": "Placeholder for the custom URL input"
+  },
   "idInstancePlaceholder": {
     "message": "Instance ID",
     "description": "Placeholder for the instance id input"
