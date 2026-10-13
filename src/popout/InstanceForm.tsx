@@ -70,6 +70,9 @@ export function InstanceForm() {
 
   return (
     <form onSubmit={handleSubmit} className="instance-form">
+      <p style={{ margin: '0 0 12px 0', color: 'var(--secondary-color)', whiteSpace: 'pre-line' }}>
+        {browser.i18n.getMessage('instanceAuthFormDesc')}
+      </p>
       <div key="id" className="field-row">
         <span className="field-icon">
           <Icon path={mdiIdentifier} size={1} />
