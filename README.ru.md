@@ -123,3 +123,6 @@ window.postMessage({target:"green-api-connector", type:"START_IMPORT", url:"http
 
 ### Цвета
 Палитру цветов можно поменять через CSS файл [src/shared/theme.css](src/shared/theme.css)
+
+## Лицензия
+Проект распространяется под лицензией [MIT](LICENSE).

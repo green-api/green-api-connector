@@ -123,3 +123,6 @@ The title and description text in the extension menu are displayed based on data
 
 ### Colors
 You can change the color palette via the CSS file [src/shared/theme.css](src/shared/theme.css)
+
+## License
+This project is licensed under the [MIT License](LICENSE).
