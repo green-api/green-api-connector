@@ -27,6 +27,7 @@ const messengerManifest = getMessengerManifest(MESSENGER);
 export default defineManifest({
   manifest_version: 3,
   name: '__MSG_extName__',
+  description: '__MSG_extDescription__',
   default_locale: 'en',
   version,
   permissions: ['scripting', 'tabs', 'browsingData'],
