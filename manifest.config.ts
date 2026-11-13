@@ -3,18 +3,30 @@ import { defineManifest } from '@crxjs/vite-plugin'
 import { getTrustedHosts } from './src/shared/config'
 import { manifestContribution as whatsappManifest } from './src/packages/whatsapp/manifest'
 import { manifestContribution as maxManifest } from './src/packages/max/manifest'
+import { manifestContribution as instagramManifest } from './src/packages/instagram/manifest'
 
 const APP_HOSTS = getTrustedHosts()
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8'))
 
-const MESSENGER_MANIFESTS = {
-  whatsapp: whatsappManifest,
-  max: maxManifest
+interface ManifestContribution {
+  origin: string
+  matches: string[]
+  pageScript: string
+  extraPermissions?: string[]
+  extraHostPermissions?: string[]
 }
 
-function getMessengerManifest(selectedMessenger: string) {
+const MESSENGER_MANIFESTS: Record<string, ManifestContribution> = {
+  whatsapp: whatsappManifest,
+  max: maxManifest,
+  instagram: instagramManifest,
+}
+
+const unique = <T>(items: T[]): T[] => [...new Set(items)]
+
+function getMessengerManifest(selectedMessenger: string): ManifestContribution {
   if (selectedMessenger in MESSENGER_MANIFESTS) {
-    return MESSENGER_MANIFESTS[selectedMessenger as keyof typeof MESSENGER_MANIFESTS];
+    return MESSENGER_MANIFESTS[selectedMessenger];
   }
   const availableMessengers = Object.keys(MESSENGER_MANIFESTS).join(', ')
   throw new Error(`Unknown MESSENGER "${selectedMessenger}". Available messengers: ${availableMessengers}`)
@@ -29,8 +41,12 @@ export default defineManifest({
   name: '__MSG_extName__',
   default_locale: 'en',
   version,
-  permissions: ['scripting', 'tabs', 'browsingData'],
-  host_permissions: [...messengerManifest.matches, ...APP_HOSTS],
+  permissions: unique(['scripting', 'tabs', 'browsingData', ...(messengerManifest.extraPermissions ?? [])]),
+  host_permissions: unique([
+    ...messengerManifest.matches,
+    ...(messengerManifest.extraHostPermissions ?? []),
+    ...APP_HOSTS,
+  ]),
   background: { 
     service_worker: 'src/background/index.ts',
     type: 'module',
