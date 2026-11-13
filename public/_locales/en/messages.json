@@ -12,7 +12,7 @@
     "description": "Button to open the instance authorization popout"
   },
   "instanceAuthFormDesc": {
-    "message": "Enter the credentials of the instance you want to authorize via the extension into the form. Then click the 'Link Device' button.\nIf you are already logged into the web version, log out before authorizing the instance.\nDo not close this window until the synchronization is complete!",
+    "message": "• Enter the credentials of the instance you want to authorize via the extension into the form.\n• Click the 'Link Device' button.\n• If you are already logged into the web version, log out before authorizing the instance.\n• Do not close this window until the synchronization is complete!",
     "description": "Description for instance authorization popout"
   },
   "idInstancePlaceholder": {

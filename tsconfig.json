@@ -12,6 +12,7 @@
     },
     "include": [
         "src",
-        "manifest.config.ts"
+        "manifest.config.ts",
+        "scripts/preview"
     ]
 }

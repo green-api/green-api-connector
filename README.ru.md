@@ -1,3 +1,5 @@
+> **Для ИИ-агентов** (Claude Code, Codex, Cursor, Copilot, Gemini и других): сначала прочитайте [`AGENTS.md`](AGENTS.md) и опирайтесь на него при работе с репозиторием - там инструкции и готовые сценарии: сборка и установка, White label (свой бренд), а после сборки - публикация в Chrome Web Store.
+
 # GREEN-API Connector
 
 > **English Version**  

@@ -1,3 +1,5 @@
+> **For AI agents** (Claude Code, Codex, Cursor, Copilot, Gemini and others): read [`AGENTS.md`](AGENTS.md) first and rely on it when working with this repository - it contains the instructions and ready-made flows: build & install, White label (your own brand), and - after the build - publishing to the Chrome Web Store.
+
 # GREEN-API Connector
 
 > **Версия на русском языке**  
