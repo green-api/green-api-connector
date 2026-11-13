@@ -5,7 +5,7 @@ import { cancelActiveImport } from "./import-manager"
 
 const POPOUT_URL = browser.runtime.getURL("popout.html")
 const POPOUT_WIDTH = 420
-const POPOUT_HEIGHT = 400
+const POPOUT_HEIGHT = 460
 
 let openedWindowId: number | undefined
 

@@ -47,18 +47,6 @@
     }
   }
 
-  function isPwa() {
-    try {
-      if (window.matchMedia) {
-        if (window.matchMedia('(display-mode: standalone)').matches) return true
-        if (window.matchMedia('(display-mode: window-controls-overlay)').matches) return true
-        if (window.matchMedia('(display-mode: minimal-ui)').matches) return true
-      }
-      if (window.navigator && window.navigator.standalone === true) return true
-    } catch (e) {}
-    return false
-  }
-
   function buildAcceptLanguage(langs) {
     if (!langs || !langs.length) return undefined
     var parts = []
@@ -81,7 +69,8 @@
       deviceLocale: lang,
       screen: screenString(),
       timezone: timezone(),
-      isPwa: isPwa(),
+      // Импорт всегда идёт в popup-окне расширения, которое matchMedia(display-mode) принимает за PWA
+      isPwa: false,
       acceptLanguage: buildAcceptLanguage(navigator.languages),
     }
   }

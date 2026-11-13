@@ -1,8 +1,10 @@
 import browser from 'webextension-polyfill';
 import { InstanceForm } from './InstanceForm';
-import { CustomUrlForm } from './CustomUrlForm';
+import { useFitWindowHeight } from './useFitWindowHeight';
 
 export function App() {
+  useFitWindowHeight();
+
   return (
     <div
       style={{
@@ -23,7 +25,11 @@ export function App() {
         {browser.i18n.getMessage('extName')}
       </h3>
       
-      <CustomUrlForm />
+      <p style={{ margin: '0 0 12px 0', color: 'var(--secondary-color)', whiteSpace: 'pre-line' }}>
+        {browser.i18n.getMessage('instanceAuthFormDesc')}
+      </p>
+      
+      <InstanceForm />
     </div>
   )
 }

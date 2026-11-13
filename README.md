@@ -76,7 +76,7 @@ Example of an incoming request payload:
 Possible values for the `type` field:
 * `CONNECTOR_READY` - response to a PING. Also sent upon successful activation on the page
 * `IMPORT_SENT` - data was successfully sent to the endpoint specified in `url`. Includes additional fields `name` and `number`.
-* `EXISTING_SESSION` - the user is already logged in. Data was not sent to the endpoint
+* `EXISTING_SESSION` - the user is already logged in. Data was not sent to the endpoint. Includes the additional field `canKeep`: `true` if the messenger supports `KEEP_AND_CONTINUE` (reusing the existing session), `false` if only `CLEAR_AND_CONTINUE` or `CANCEL_IMPORT` make sense
 * `IMPORT_ERROR` - an error occurred during synchronization. The reason is specified in the additional field `reason`:
   * `import_already_in_progress` - the authorization process is already running
   * `tab_closed` - the authorization tab was closed before authorization was completed

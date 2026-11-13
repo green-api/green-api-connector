@@ -10,16 +10,30 @@ export function InstanceForm() {
   const [idInstance, setIdInstance] = useState('');
   const [apiTokenInstance, setApiTokenInstance] = useState('');
   const [importStatus, setImportStatus] = useState<{ text: string; color: string } | null>(null);
+  const [existingSessionPrompt, setExistingSessionPrompt] = useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setImportStatus(null);
+    setExistingSessionPrompt(false);
 
     const url = `https://api.green-api.com/waInstance${idInstance}/setAuthCreds/${apiTokenInstance}`;
 
     browser.runtime.sendMessage(
       { type: 'START_IMPORT', url }
     ).catch(() => { });
+  };
+
+  const handleKeepSession = () => {
+    setExistingSessionPrompt(false);
+    setImportStatus(null);
+    browser.runtime.sendMessage({ type: 'KEEP_AND_CONTINUE' }).catch(() => { });
+  };
+
+  const handleCancelImport = () => {
+    setExistingSessionPrompt(false);
+    setImportStatus({ text: browser.i18n.getMessage('formMsgExistingSession'), color: 'var(--danger-color)' });
+    browser.runtime.sendMessage({ type: 'CANCEL_IMPORT' }).catch(() => { });
   };
 
   useEffect(() => {
@@ -49,13 +63,20 @@ export function InstanceForm() {
 
       switch (message.type) {
         case 'IMPORT_ERROR':
+          setExistingSessionPrompt(false);
           handleImportError(message);
           break;
         case 'EXISTING_SESSION':
+          if (message.canKeep) {
+            setImportStatus({ text: browser.i18n.getMessage('formMsgExistingSessionKeep'), color: 'var(--secondary-color)' });
+            setExistingSessionPrompt(true);
+            break;
+          }
           setImportStatus({ text: browser.i18n.getMessage('formMsgExistingSession'), color: 'var(--danger-color)' });
           browser.runtime.sendMessage({ type: 'CANCEL_IMPORT' }).catch(() => { });
           break;
         case 'IMPORT_SENT':
+          setExistingSessionPrompt(false);
           setImportStatus({ text: browser.i18n.getMessage('formMsgImportSent'), color: 'var(--primary-color)' });
           break;
       }
@@ -70,9 +91,6 @@ export function InstanceForm() {
 
   return (
     <form onSubmit={handleSubmit} className="instance-form">
-      <p style={{ margin: '0 0 12px 0', color: 'var(--secondary-color)', whiteSpace: 'pre-line' }}>
-        {browser.i18n.getMessage('instanceAuthFormDesc')}
-      </p>
       <div key="id" className="field-row">
         <span className="field-icon">
           <Icon path={mdiIdentifier} size={1} />
@@ -101,12 +119,23 @@ export function InstanceForm() {
         />
       </div>
 
-      <button type="submit" className="link-button">
+      <button type="submit" className="link-button" disabled={existingSessionPrompt}>
         {browser.i18n.getMessage('linkDeviceButton')}
       </button>
 
       {importStatus && (
         <p style={{ margin: '8px 0 0 0', color: importStatus.color }}>{importStatus.text}</p>
+      )}
+
+      {existingSessionPrompt && (
+        <div className="button-row">
+          <button type="button" className="link-button" onClick={handleKeepSession}>
+            {browser.i18n.getMessage('keepSessionButton')}
+          </button>
+          <button type="button" className="secondary-button" onClick={handleCancelImport}>
+            {browser.i18n.getMessage('cancelButton')}
+          </button>
+        </div>
       )}
     </form>
   );

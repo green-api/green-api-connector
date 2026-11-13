@@ -26,7 +26,8 @@ export class TemplateSession implements MessengerSession {
   }
 
   // Called when the user has confirmed clearing an existing session detected via an
-  // { type: 'EXISTING_SESSION' } event emitted from start. Real messengers typically
+  // { type: 'EXISTING_SESSION', number, canKeep } event emitted from start (canKeep tells the UI
+  // whether onUserConfirmedKeep is actually supported by this driver). Real messengers typically
   // wipe the site's browsing data here, reload the tab, await waitForTabLoad and continue
   // the login flow right there - start() is not called again.
   // The orchestrator already guarantees this is called only after EXISTING_SESSION was

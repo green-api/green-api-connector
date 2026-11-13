@@ -5,6 +5,11 @@ import { getSession as getSessionDump } from './page-scripts'
 
 const MAX_POLLS = 120
 const POLL_INTERVAL_MS = 2500
+const IDENTITY_NOT_ALLOWED = "'identity' is not allowed"
+
+function hasIdentity(dump: unknown): dump is Record<string, unknown> & { identity: unknown } {
+  return typeof dump === 'object' && dump !== null && 'identity' in dump
+}
 
 export class MaxSession implements MessengerSession {
   private cancelled = false
@@ -18,7 +23,7 @@ export class MaxSession implements MessengerSession {
 
     const dump = await getSessionDump(this.ctx.targetTabId)
     if (dump != null){
-      this.ctx.emit({ type: 'EXISTING_SESSION', number: ""}) // TODO: вытаскивать номер телефона для событий
+      this.ctx.emit({ type: 'EXISTING_SESSION', number: '', canKeep: true }) // TODO: вытаскивать номер телефона для событий
       return;
     }
 
@@ -72,14 +77,36 @@ export class MaxSession implements MessengerSession {
     this.ctx.finish()
   }
 
+  private postDump(dump: unknown): Promise<Response> {
+    return fetch(this.ctx.endpointUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dump),
+    })
+  }
+
+  // max-core < 6.9.0 не знает поле identity и отвечает 400 "'identity' is not allowed"
+  // на этапе валидации, до сохранения токена. Для обратной совместимости повторяем без него.
+  private async isIdentityRejected(response: Response): Promise<boolean> {
+    if (response.status !== 400)
+      return false
+    try {
+      const text = await response.clone().text()
+      return text.includes(IDENTITY_NOT_ALLOWED)
+    } catch {
+      return false
+    }
+  }
+
   private async sendDump(dump: unknown): Promise<void> {
     let response: Response
     try {
-      response = await fetch(this.ctx.endpointUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dump),
-      })
+      response = await this.postDump(dump)
+
+      if (!this.cancelled && hasIdentity(dump) && await this.isIdentityRejected(response)) {
+        const { identity: _identity, ...legacyDump } = dump
+        response = await this.postDump(legacyDump)
+      }
     } catch {
       if (this.cancelled)
         return
@@ -98,6 +125,9 @@ export class MaxSession implements MessengerSession {
     }
 
     this.ctx.emit({ type: 'IMPORT_SENT', name: null, number: null })
+    // После успешного импорта удаляем веб-сессию и закрываем окно.
+    // Закрытие окна (finish) обрывает websocket страницы — отдельно трогать его нельзя,
+    // перехват window.WebSocket ломает соединение приложения MAX с core.
     await removeBrowsingData(MAX_ORIGIN)
     this.ctx.finish()
   }

@@ -15,14 +15,6 @@
     "message": "Enter the credentials of the instance you want to authorize via the extension into the form. Then click the 'Link Device' button.\nIf you are already logged into the web version, log out before authorizing the instance.\nDo not close this window until the synchronization is complete!",
     "description": "Description for instance authorization popout"
   },
-  "customUrlFormDesc": {
-    "message": "Enter the URL the extension should send the authentication data to. Then click the 'Link Device' button.\nIf you are already logged into the web version of the messenger, log out before continuing.\nDo not close this window until the synchronization is complete!",
-    "description": "Description for custom URL authorization popout"
-  },
-  "customUrlPlaceholder": {
-    "message": "URL to send the authentication data to",
-    "description": "Placeholder for the custom URL input"
-  },
   "idInstancePlaceholder": {
     "message": "Instance ID",
     "description": "Placeholder for the instance id input"
@@ -58,5 +50,17 @@
   "formMsgInstanceHasCreds": {
     "message": "The instance already has different authorization credentials",
     "description": "Import error: HTTP 409, instance already has different auth credentials"
+  },
+  "formMsgExistingSessionKeep": {
+    "message": "You are already logged into the web version. Use the current session?",
+    "description": "Existing web session detected, the messenger allows reusing it"
+  },
+  "keepSessionButton": {
+    "message": "Use current session",
+    "description": "Button: continue with the existing web session"
+  },
+  "cancelButton": {
+    "message": "Cancel",
+    "description": "Button: cancel the authorization"
   }
 }
