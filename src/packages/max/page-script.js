@@ -69,7 +69,6 @@
       deviceLocale: lang,
       screen: screenString(),
       timezone: timezone(),
-      // Импорт всегда идёт в popup-окне расширения, которое matchMedia(display-mode) принимает за PWA
       isPwa: false,
       acceptLanguage: buildAcceptLanguage(navigator.languages),
     }
@@ -81,7 +80,7 @@
       if (!raw) return null
       var parsed = JSON.parse(raw)
       if (!parsed || typeof parsed.token !== 'string' || !parsed.token) return null
-      var deviceId = window.localStorage.getItem('__oneme_device_id') || null
+      var deviceId = window.localStorage.getItem('__oneme_device_id')
       return { token: parsed.token, deviceId: deviceId, identity: buildIdentity() }
     } catch (e) {
       return null

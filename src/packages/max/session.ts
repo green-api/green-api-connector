@@ -23,7 +23,7 @@ export class MaxSession implements MessengerSession {
 
     const dump = await getSessionDump(this.ctx.targetTabId)
     if (dump != null){
-      this.ctx.emit({ type: 'EXISTING_SESSION', number: '', canKeep: true }) // TODO: вытаскивать номер телефона для событий
+      this.ctx.emit({ type: 'EXISTING_SESSION', number: ""}) // TODO: вытаскивать номер телефона для событий
       return;
     }
 
@@ -85,8 +85,6 @@ export class MaxSession implements MessengerSession {
     })
   }
 
-  // max-core < 6.9.0 не знает поле identity и отвечает 400 "'identity' is not allowed"
-  // на этапе валидации, до сохранения токена. Для обратной совместимости повторяем без него.
   private async isIdentityRejected(response: Response): Promise<boolean> {
     if (response.status !== 400)
       return false
@@ -125,9 +123,6 @@ export class MaxSession implements MessengerSession {
     }
 
     this.ctx.emit({ type: 'IMPORT_SENT', name: null, number: null })
-    // После успешного импорта удаляем веб-сессию и закрываем окно.
-    // Закрытие окна (finish) обрывает websocket страницы — отдельно трогать его нельзя,
-    // перехват window.WebSocket ломает соединение приложения MAX с core.
     await removeBrowsingData(MAX_ORIGIN)
     this.ctx.finish()
   }

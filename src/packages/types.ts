@@ -1,6 +1,5 @@
 export type ImportEvent =
-  // canKeep: whether the driver supports KEEP_AND_CONTINUE (using the existing session as is)
-  | { type: 'EXISTING_SESSION'; number: string; canKeep: boolean }
+  | { type: 'EXISTING_SESSION'; number: string }
   | { type: 'IMPORT_SENT'; name: string | null; number: string | null }
   | { type: 'IMPORT_ERROR'; reason: string; httpStatus?: number }
 
@@ -35,7 +34,7 @@ export function isImportEvent(value: unknown): value is ImportEvent {
   const candidate = value as Record<string, unknown>
   switch (candidate.type) {
     case 'EXISTING_SESSION':
-      return typeof candidate.number === 'string' && typeof candidate.canKeep === 'boolean'
+      return typeof candidate.number === 'string'
     case 'IMPORT_SENT':
       return (
         (candidate.name === null || typeof candidate.name === 'string') &&

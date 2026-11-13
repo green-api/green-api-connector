@@ -50,17 +50,5 @@
   "formMsgInstanceHasCreds": {
     "message": "The instance already has different authorization credentials",
     "description": "Import error: HTTP 409, instance already has different auth credentials"
-  },
-  "formMsgExistingSessionKeep": {
-    "message": "You are already logged into the web version. Use the current session?",
-    "description": "Existing web session detected, the messenger allows reusing it"
-  },
-  "keepSessionButton": {
-    "message": "Use current session",
-    "description": "Button: continue with the existing web session"
-  },
-  "cancelButton": {
-    "message": "Cancel",
-    "description": "Button: cancel the authorization"
   }
 }

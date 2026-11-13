@@ -29,7 +29,7 @@ export class WhatsAppSession implements MessengerSession {
       return
 
     if (existingJid) {
-      this.ctx.emit({ type: 'EXISTING_SESSION', number: existingJid, canKeep: false })
+      this.ctx.emit({ type: 'EXISTING_SESSION', number: existingJid })
       return
     }
 

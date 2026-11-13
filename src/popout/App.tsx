@@ -1,10 +1,7 @@
 import browser from 'webextension-polyfill';
 import { InstanceForm } from './InstanceForm';
-import { useFitWindowHeight } from './useFitWindowHeight';
 
 export function App() {
-  useFitWindowHeight();
-
   return (
     <div
       style={{
