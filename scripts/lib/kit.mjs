@@ -537,7 +537,9 @@ export async function createRelease({ lang = 'en', messenger = CLIENT_MESSENGER,
   const dir = join(RELEASE_DIR, folder)
   const zipChrome = `${folder}-chrome.zip`
   const zipFirefox = `${folder}-firefox.zip`
-  rmSync(dir, { recursive: true, force: true })
+  // Keep the release directory itself: Windows may lock it while another process has it open.
+  mkdirSync(dir, { recursive: true })
+  for (const entry of readdirSync(dir)) rmSync(join(dir, entry), { recursive: true, force: true })
   mkdirSync(join(dir, 'test'), { recursive: true })
 
   onStep('build')
@@ -547,6 +549,18 @@ export async function createRelease({ lang = 'en', messenger = CLIENT_MESSENGER,
 
   onStep('testBuild')
   await withDevMode(() => runViteBuild(join(dir, 'test', 'chrome'), messenger))
+  // Label the built locales after branding, before copying them to Firefox.
+  for (const lang of localeLangs()) {
+    const path = join(dir, 'test', 'chrome', '_locales', lang, 'messages.json')
+    const messages = readJson(path)
+    const suffix = ` ${messages.debugExtNameSuffix?.message ?? '(debug)'}`
+    // Chrome limits the manifest name to 75 characters - shorten the brand name, never the warning.
+    const room = 75 - suffix.length
+    const base = messages.extName.message
+    messages.extName.message = (base.length > room ? `${base.slice(0, room - 1)}…` : base) + suffix
+    messages.extDescription.message = messages.debugExtDescription.message
+    writeFileSync(path, JSON.stringify(messages, null, 2) + '\n')
+  }
   splitByBrowser(join(dir, 'test', 'chrome'), join(dir, 'test', 'firefox'))
 
   onStep('pages')

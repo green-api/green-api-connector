@@ -1,0 +1,14 @@
+{
+  "name": {
+    "en": "QR Connector",
+    "ru": "QR Connector"
+  },
+  "description": {
+    "en": "An extension for completing authentication for your instance.",
+    "ru": "Расширение для прохождения passkey авторизации вашего инстанса."
+  },
+  "colors": {
+    "primary": "#0046c5",
+    "primaryDark": "#0046c5"
+  }
+}

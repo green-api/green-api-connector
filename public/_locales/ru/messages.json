@@ -7,6 +7,14 @@
     "message": "Расширение для прохождения passkey авторизации вашего инстанса. Подробнее о расширении читайте в документации.",
     "description": "Описание расширения"
   },
+  "debugExtDescription": {
+    "message": "Расширение собрано в режиме отладки. Внимание! Сборка не для публикации.",
+    "description": "Extension description for debug builds"
+  },
+  "debugExtNameSuffix": {
+    "message": "(debug - не для публикации)",
+    "description": "Suffix appended to the extension name in debug builds"
+  },
   "openInstanceAuthForm": {
     "message": "Авторизовать инстанс",
     "description": "Кнопка для открытия формы авторизации инстанса"

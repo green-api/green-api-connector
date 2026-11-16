@@ -4,137 +4,367 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GREEN-API Connector example page</title>
+  <title>White label integration example</title>
 
   <style>
-    body { margin: 0; font-family: system-ui}
-    .wrap { max-width: 680px; margin: 0 auto; padding: 2rem 1rem; }
-    .wrap > * { margin-bottom: 1.5rem; }
-    label { display: block; margin-bottom: 0.375rem; font-size: 0.85rem; }
-    .btn { display: block; width: 100%; padding: 0.75rem 1rem; margin-bottom: 0.85rem; border: none; border-radius: 0.375rem; background: #e2e8f0; cursor: pointer; }
-    .btn:hover { background: #cbd5e1; }
-    .input { width: 100%; margin-bottom: 0.375rem; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.375rem; box-sizing: border-box; }
-    .panel { background: #fff; border: 1px solid #cbd5e1; border-radius: 0.375rem; overflow: hidden; }
-    .panel-head { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-bottom: 1px solid #cbd5e1; background: #f8fafc; }
-    .link-btn { background: transparent; border: none; cursor: pointer; }
-    .log { height: 16rem; overflow-y: auto; font-family: ui-monospace, Consolas, monospace; font-size: 0.85rem; }
-    .log-row { display: flex; gap: 0.5rem; align-items: flex-start; padding: 0.375rem 0.625rem; }
-    .log-row.out { background: #f0fdf4; }
-    .log-row.in { background: #f9fafb; }
-    .log-arrow.out { color: #22c55e; }
-    .log-arrow.in { color: #f43f5e; }
-    .log-msg { font-family: ui-monospace, Consolas, monospace; word-break: break-all; }
+    :root {
+      --primary: #3b9702;
+      --primary-hover: #327f02;
+      --primary-soft: #eef7e6;
+      --text: #1f2328;
+      --muted: #59636e;
+      --border: #d8dee4;
+      --bg: #f6f8f5;
+      --surface: #ffffff;
+      --danger: #d1242f;
+      --warning: #b25e00;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #4caf10;
+        --primary-hover: #5cc41c;
+        --primary-soft: #1f2c17;
+        --text: #e6edf3;
+        --muted: #9198a1;
+        --border: #30363d;
+        --bg: #0f1410;
+        --surface: #171c18;
+        --danger: #ff6b6b;
+        --warning: #e3a03b;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: var(--text); background: var(--bg); }
+
+    /* Header */
+    .header { position: relative; padding: 1rem 7rem; text-align: center; background: var(--surface); border-bottom: 3px solid var(--primary); }
+    .header h1 { margin: 0; font-size: 1.15rem; }
+    .header p { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.9rem; }
+    .lang { position: absolute; top: 50%; right: 1.5rem; transform: translateY(-50%); display: flex; border: 1px solid var(--border); border-radius: 0.5rem; overflow: hidden; }
+    .lang button { padding: 0.4rem 0.7rem; border: none; background: transparent; color: var(--muted); cursor: pointer; font: inherit; font-size: 0.85rem; }
+    .lang button.active { background: var(--primary); color: #fff; }
+
+    /* Layout: main example + developer sidebar */
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr) 500px; min-height: 100vh; }
+    .content { min-width: 0; }
+    .main { padding: 2.5rem 1.5rem; }
+    .sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 1.25rem; background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; gap: 1rem; }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: minmax(0, 1fr); }
+      .header { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 1rem; }
+      .lang { position: static; transform: none; }
+      .main { padding: 1.5rem 1rem; }
+      .sidebar { position: static; height: auto; border-left: none; border-top: 1px solid var(--border); }
+    }
+
+    /* Main: "someone else's" product */
+    .product { max-width: 460px; margin: 0 auto; }
+    .product-tag { display: inline-block; margin-bottom: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 1rem; background: var(--primary-soft); color: var(--primary); font-size: 0.75rem; font-weight: 600; }
+    .card { padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; }
+    .card h2 { margin: 0 0 0.4rem; font-size: 1.25rem; }
+    .card > p { margin: 0 0 1.25rem; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+
+    label { display: block; margin-bottom: 0.3rem; font-size: 0.8rem; color: var(--muted); }
+    .input { width: 100%; margin-bottom: 0.85rem; padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 0.5rem; background: var(--surface); color: var(--text); font: inherit; font-size: 0.9rem; }
+    .input:focus { outline: none; border-color: var(--primary); }
+
+    .btn { display: block; width: 100%; padding: 0.7rem 1rem; border: none; border-radius: 0.5rem; background: var(--primary); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-light { background: transparent; color: var(--text); border: 1px solid var(--border); font-weight: 500; text-align: left; font-size: 0.85rem; }
+    .btn-light:hover { background: var(--primary-soft); border-color: var(--primary); }
+    .btn-light code { color: var(--primary); }
+    .row { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+    .row .btn { flex: 1; }
+
+    .status { margin-top: 1rem; padding: 0.7rem 0.85rem; border-radius: 0.5rem; font-size: 0.875rem; background: var(--bg); color: var(--muted); }
+    .status.success { background: var(--primary-soft); color: var(--primary); }
+    .status.error { color: var(--danger); }
+    .status.warning { color: var(--warning); }
+    .hidden { display: none; }
+
+    /* Sidebar: protocol buttons and event log */
+    .sidebar h3 { margin: 0 0 0.6rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+    .buttons { display: flex; flex-direction: column; gap: 0.45rem; }
+    .badge { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
+    .badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--warning); }
+    .badge.ok::before { background: var(--primary); }
+    .badge.error::before { background: var(--danger); }
+    .hint { margin: 0.5rem 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.4; }
+    .log-head { display: flex; justify-content: space-between; align-items: center; }
+    .link-btn { border: none; background: transparent; color: var(--primary); cursor: pointer; font: inherit; font-size: 0.8rem; }
+    .log { flex: 1; min-height: 14rem; overflow-y: auto; border: 1px solid var(--border); border-radius: 0.5rem; font-family: ui-monospace, Consolas, monospace; font-size: 0.75rem; }
+    .log-row { display: flex; gap: 0.4rem; padding: 0.35rem 0.5rem; border-bottom: 1px solid var(--border); word-break: break-all; }
+    .log-row .arrow { font-weight: 700; }
+    .log-row.out .arrow { color: var(--primary); }
+    .log-row.in .arrow { color: #2f6fdb; }
+    .log-row .time { color: var(--muted); white-space: nowrap; }
   </style>
 </head>
 
 <body>
 
-  <div class="wrap">
-    <header>
-      <h1>GREEN-API Connector example page</h1>
+  <div class="layout">
+
+    <div class="content">
+    <header class="header">
+      <div class="header-text">
+        <h1 data-i18n="headerTitle"></h1>
+        <p data-i18n="headerText"></p>
+      </div>
+      <div class="lang">
+        <button type="button" data-lang="ru">RU</button>
+        <button type="button" data-lang="en">EN</button>
+      </div>
     </header>
 
-    <div class>
-      <button id="btn-ping" class="btn">Проверить расширение (PING)</button>
-      <div>
-        <label for="url-input">URL на который будут отправленные данные авторизации</label>
-        <input id="url-input" class="input" type="text" placeholder="https://example.com">
-        <button id="btn-start-auth" class="btn">Начать авторизацию (START_IMPORT)</button>
+    <!-- Integration example: how the button may look on your website -->
+    <main class="main">
+      <div class="product">
+        <span class="product-tag" data-i18n="productTag"></span>
+        <div class="card">
+          <h2 data-i18n="cardTitle"></h2>
+          <p data-i18n="cardText"></p>
+
+          <label for="id-instance">idInstance</label>
+          <input id="id-instance" class="input" type="text" placeholder="1101000001">
+
+          <label for="api-token">apiTokenInstance</label>
+          <input id="api-token" class="input" type="password" placeholder="••••••••••••••••">
+
+          <button id="btn-authorize" class="btn" type="button" data-i18n="authorize"></button>
+
+          <div id="status" class="status" data-i18n="statusIdle"></div>
+
+          <div id="existing-actions" class="row hidden">
+            <button id="btn-relogin" class="btn" type="button" data-i18n="relogin"></button>
+            <button id="btn-keep-session" class="btn btn-light" type="button" data-i18n="keepSession"></button>
+          </div>
+        </div>
       </div>
-      <button id="btn-clear" class="btn">Очистить данные (CLEAR_AND_CONTINUE)</button>
-      <button id="btn-keep" class="btn">Использовать текущую сессию (KEEP_AND_CONTINUE)</button>
-      <button id="btn-cancel" class="btn">Отменить импорт (CANCEL_IMPORT)</button>
+    </main>
     </div>
 
+    <!-- Developer panel: extension commands and event log -->
+    <aside class="sidebar">
+      <div>
+        <h3 data-i18n="extension"></h3>
+        <span id="connector-badge" class="badge" data-i18n="waiting"></span>
+        <p id="connector-hint" class="hint hidden" data-i18n="notFoundHint"></p>
+      </div>
 
-    <div class="panel">
-      <div class="panel-head">
-        <span>Журнал событий</span>
-        <button id="btn-clear-log" class="link-btn" title="Очистить журнал">Очистить</button>
+      <div>
+        <div class="buttons">
+          <button id="btn-ping" class="btn btn-light" type="button"><code>PING</code> - <span data-i18n="ping"></span></button>
+          <div>
+            <label for="url-input" data-i18n="urlLabel"></label>
+            <input id="url-input" class="input" type="text" placeholder="https://api.green-api.com/waInstance.../setAuthCreds/...">
+            <button id="btn-start" class="btn btn-light" type="button"><code>START_IMPORT</code> - <span data-i18n="start"></span></button>
+          </div>
+          <button id="btn-clear" class="btn btn-light" type="button"><code>CLEAR_AND_CONTINUE</code> - <span data-i18n="clear"></span></button>
+          <button id="btn-keep" class="btn btn-light" type="button"><code>KEEP_AND_CONTINUE</code> - <span data-i18n="keep"></span></button>
+          <button id="btn-cancel" class="btn btn-light" type="button"><code>CANCEL_IMPORT</code> - <span data-i18n="cancel"></span></button>
+        </div>
+      </div>
+
+      <div class="log-head">
+        <h3 data-i18n="log"></h3>
+        <button id="btn-clear-log" class="link-btn" type="button" data-i18n="clearLog"></button>
       </div>
       <div id="log" class="log"></div>
-    </div>
+    </aside>
   </div>
 
   <script>
-    (function () {
-      'use strict';
+    // ---------------------------------------------------------------
+    // 1. Working with the extension - everything you need for the integration
+    // ---------------------------------------------------------------
 
-      // Маркер расширения
-      const EXTENSION_SOURCE = 'green-api-connector'
+    // Extension marker (CONNECTOR_SOURCE in src/shared/config.ts)
+    const CONNECTOR = 'green-api-connector'
 
-      document.getElementById('btn-ping').addEventListener('click', function () {
-        let payload = {target: EXTENSION_SOURCE, type: "PING"};
+    // Send a command to the extension
+    function send(type, extra) {
+      const message = Object.assign({ target: CONNECTOR, type: type }, extra)
+      window.postMessage(message, '*')
+      addLog('out', message)
+    }
 
-        window.postMessage(payload, '*')
-        appendLog('out', JSON.stringify(payload));
-      });
+    // Receive responses from the extension
+    window.addEventListener('message', function (event) {
+      if (event.source !== window || !event.data || event.data.source !== CONNECTOR) return
+      addLog('in', event.data)
+      onConnectorEvent(event.data)
+    })
 
-      var urlInput = document.getElementById('url-input');
-      document.getElementById('btn-start-auth').addEventListener('click', function () {
-        const url = urlInput.value.trim()
-        let payload = {target: EXTENSION_SOURCE, type: "START_IMPORT", url: url};
+    // ---------------------------------------------------------------
+    // 2. Integration example: the "Authorize account with Passkey" button
+    // ---------------------------------------------------------------
 
-        window.postMessage(payload, '*')
-        appendLog('out', JSON.stringify(payload));
-      });
+    // URL of the GREEN-API instance setAuthCreds method the extension sends the authorization data to
+    function greenApiUrl() {
+      const id = document.getElementById('id-instance').value.trim()
+      const token = document.getElementById('api-token').value.trim()
+      return id && token ? 'https://api.green-api.com/waInstance' + id + '/setAuthCreds/' + token : ''
+    }
 
-      document.getElementById('btn-clear').addEventListener('click', function () {
-        let payload = {target: EXTENSION_SOURCE, type: "CLEAR_AND_CONTINUE"};
+    document.getElementById('btn-authorize').onclick = function () {
+      const url = greenApiUrl()
+      if (!url) return setStatus('error', t('fillFields'))
 
-        window.postMessage(payload, '*')
-        appendLog('out', JSON.stringify(payload));
-      });
+      send('START_IMPORT', { url: url })
+      setStatus('', t('statusWaiting'))
+    }
+    document.getElementById('btn-relogin').onclick = function () { send('CLEAR_AND_CONTINUE') }
+    document.getElementById('btn-keep-session').onclick = function () { send('KEEP_AND_CONTINUE') }
 
-      document.getElementById('btn-keep').addEventListener('click', function () {
-        let payload = {target: EXTENSION_SOURCE, type: "KEEP_AND_CONTINUE"};
+    function onConnectorEvent(data) {
+      document.getElementById('existing-actions').classList.toggle('hidden', data.type !== 'EXISTING_SESSION')
 
-        window.postMessage(payload, '*')
-        appendLog('out', JSON.stringify(payload));
-      });
-
-      document.getElementById('btn-cancel').addEventListener('click', function () {
-        let payload = {target: EXTENSION_SOURCE, type: "CANCEL_IMPORT"};
-
-        window.postMessage(payload, '*')
-        appendLog('out', JSON.stringify(payload));
-      });
-
-      document.getElementById('btn-clear-log').addEventListener('click', function () {
-        log.innerHTML = '';
-      });
-
-      window.addEventListener('message', (event) =>
-        {
-          const isEventFromExtension = event.source === window && event.data.source === EXTENSION_SOURCE;
-          if (!event.data || !isEventFromExtension) return;
-
-          appendLog('in', JSON.stringify(event.data))
-        }
-      )
-      
-      // Журнал событий
-      var log = document.getElementById('log');
-      function appendLog(type, payload) {
-        var arrows = { out: '↑', in: '↓' };
-        var row = document.createElement('div');
-        row.className = 'log-row ' + type;
-
-        var arrow = document.createElement('span');
-        arrow.className = 'log-arrow ' + type;
-        arrow.textContent = arrows[type];
-
-        var msg = document.createElement('span');
-        msg.className = 'log-msg';
-        msg.textContent = payload;
-
-        row.appendChild(arrow);
-        row.appendChild(msg);
-        log.appendChild(row);
-
-        log.scrollTop = log.scrollHeight;
+      if (data.type === 'CONNECTOR_READY') {
+        setBadge(true)
+      } else if (data.type === 'IMPORT_SENT') {
+        setStatus('success', t('statusSent') + ' ' + [data.name, data.number].filter(Boolean).join(', '))
+      } else if (data.type === 'EXISTING_SESSION') {
+        setStatus('warning', t('statusExisting'))
+      } else if (data.type === 'IMPORT_ERROR') {
+        setStatus('error', t('statusError') + ' ' + data.reason + (data.httpStatus ? ' (' + data.httpStatus + ')' : ''))
       }
-    })();
+    }
+
+    // ---------------------------------------------------------------
+    // 3. Developer panel: protocol commands
+    // ---------------------------------------------------------------
+
+    document.getElementById('btn-ping').onclick = function () { send('PING') }
+    document.getElementById('btn-start').onclick = function () {
+      // Empty field - use the GREEN-API URL built from idInstance and apiTokenInstance
+      send('START_IMPORT', { url: document.getElementById('url-input').value.trim() || greenApiUrl() })
+    }
+    document.getElementById('btn-clear').onclick = function () { send('CLEAR_AND_CONTINUE') }
+    document.getElementById('btn-keep').onclick = function () { send('KEEP_AND_CONTINUE') }
+    document.getElementById('btn-cancel').onclick = function () { send('CANCEL_IMPORT') }
+
+    // ---------------------------------------------------------------
+    // Page UI: statuses, event log, languages
+    // ---------------------------------------------------------------
+
+    const TEXTS = {
+      ru: {
+        headerTitle: 'Пример white label интеграции',
+        headerText: 'Это пример тестовой страницы для интеграции расширения на ваш сайт',
+        productTag: 'Пример вашего сайта',
+        cardTitle: 'Подключение WhatsApp',
+        cardText: 'Если на аккаунте вход по QR-коду недоступен, авторизуйте аккаунт через расширение. Расширение откроет страницу WhatsApp Web: отсканируйте QR-код и подтвердите вход с помощью Passkey, расширение передаст данные авторизации на ваш инстанс.',
+        authorize: 'Авторизовать аккаунт с помощью Passkey',
+        relogin: 'Войти заново',
+        keepSession: 'Оставить текущую сессию',
+        statusIdle: 'Введите данные инстанса и нажмите кнопку.',
+        statusWaiting: 'Завершите вход в открывшемся окне WhatsApp…',
+        statusSent: 'Аккаунт авторизован:',
+        statusExisting: 'В браузере уже есть вход в WhatsApp. Войти заново или использовать текущую сессию?',
+        statusError: 'Ошибка авторизации:',
+        fillFields: 'Заполните idInstance и apiTokenInstance.',
+        extension: 'Команды работы с расширением',
+        waiting: 'Ожидание расширения…',
+        connected: 'Расширение подключено',
+        notFound: 'Тестовая страница не нашла расширение',
+        notFoundHint: 'Требуется установить тестовое расширение из папки релиза test/. При использовании Chrome также включите «Разрешить доступ к URL файлов» в разделе «Подробнее» расширения.',
+        ping: 'проверить расширение',
+        urlLabel: 'URL, на который будут отправлены данные авторизации',
+        start: 'начать авторизацию',
+        clear: 'очистить данные и продолжить',
+        keep: 'использовать текущую сессию',
+        cancel: 'отменить авторизацию',
+        log: 'Журнал событий',
+        clearLog: 'Очистить'
+      },
+      en: {
+        headerTitle: 'White label integration example',
+        headerText: 'This is an example test page for integrating the extension into your website',
+        productTag: 'Example of your website',
+        cardTitle: 'Connect WhatsApp',
+        cardText: 'If QR code login is not available for the account, authorize it via the extension. The extension opens WhatsApp Web: scan the QR code and confirm the login with a Passkey, and the extension sends the authorization data to your instance.',
+        authorize: 'Authorize account with Passkey',
+        relogin: 'Log in again',
+        keepSession: 'Keep current session',
+        statusIdle: 'Enter the instance details and click the button.',
+        statusWaiting: 'Complete the login in the opened WhatsApp window…',
+        statusSent: 'Account authorized:',
+        statusExisting: 'WhatsApp is already logged in in this browser. Log in again or use the current session?',
+        statusError: 'Authorization error:',
+        fillFields: 'Fill in idInstance and apiTokenInstance.',
+        extension: 'Extension commands',
+        waiting: 'Waiting for the extension…',
+        connected: 'Extension is connected',
+        notFound: 'The test page did not find the extension',
+        notFoundHint: 'Install the test extension from the release folder test/. When using Chrome, also turn on "Allow access to file URLs" in the extension details.',
+        ping: 'check the extension',
+        urlLabel: 'URL the authorization data will be sent to',
+        start: 'start authorization',
+        clear: 'clear data and continue',
+        keep: 'use the current session',
+        cancel: 'cancel authorization',
+        log: 'Event log',
+        clearLog: 'Clear'
+      }
+    }
+
+    let lang = 'ru'
+    try { lang = localStorage.getItem('connector-example-lang') || '' } catch (e) {}
+    if (!TEXTS[lang]) lang = navigator.language.toLowerCase().indexOf('ru') === 0 ? 'ru' : 'en'
+
+    function t(key) { return TEXTS[lang][key] }
+
+    function setLang(value) {
+      lang = value
+      try { localStorage.setItem('connector-example-lang', value) } catch (e) {}
+      document.documentElement.lang = value
+      document.querySelectorAll('[data-i18n]').forEach(function (el) { el.textContent = t(el.dataset.i18n) })
+      document.querySelectorAll('[data-lang]').forEach(function (el) { el.classList.toggle('active', el.dataset.lang === value) })
+    }
+    document.querySelectorAll('[data-lang]').forEach(function (el) {
+      el.onclick = function () { setLang(el.dataset.lang) }
+    })
+
+    function setStatus(kind, text) {
+      const el = document.getElementById('status')
+      el.className = 'status ' + kind
+      el.removeAttribute('data-i18n')
+      el.textContent = text
+    }
+
+    let connected = false
+    function setBadge(ok) {
+      connected = connected || ok
+      const el = document.getElementById('connector-badge')
+      el.classList.toggle('ok', connected)
+      el.classList.toggle('error', !connected)
+      el.dataset.i18n = connected ? 'connected' : 'notFound'
+      document.getElementById('connector-hint').classList.toggle('hidden', connected)
+      el.textContent = t(el.dataset.i18n)
+    }
+
+    const log = document.getElementById('log')
+    function addLog(direction, message) {
+      // Do not show apiTokenInstance in the log
+      const text = JSON.stringify(message).replace(/(setAuthCreds\/)[^"/?#]+/, '$1***')
+      const row = document.createElement('div')
+      row.className = 'log-row ' + direction
+      row.innerHTML = '<span class="time"></span><span class="arrow"></span><span></span>'
+      row.children[0].textContent = new Date().toLocaleTimeString()
+      row.children[1].textContent = direction === 'out' ? '↑' : '↓'
+      row.children[2].textContent = text
+      log.appendChild(row)
+      log.scrollTop = log.scrollHeight
+    }
+    document.getElementById('btn-clear-log').onclick = function () { log.innerHTML = '' }
+
+    setLang(lang)
+
+    // Check that the extension is available on the page
+    send('PING')
+    setTimeout(function () { setBadge(false) }, 1500)
   </script>
 
 </body>
