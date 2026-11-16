@@ -29,7 +29,7 @@ For local installation, choose the folder for your browser. Do not move or delet
 1. Open a new tab and click **Three dots - Extensions - Manage Extensions**, or type `chrome://extensions` into the address bar and press Enter.
 2. Turn on **Developer mode** in the top right corner.
 
-![The chrome://extensions page: the Developer mode switch is in the top right corner (Russian browser labels)](images/install-chrome.png)
+![The chrome://extensions page: the Developer mode switch is in the top right corner](images/install-chrome.png)
 
 3. Click the **Load unpacked** button that appears.
 4. Select the `chrome/` folder from the release. Select the folder itself, not the ZIP archive or the manifest file.
@@ -54,7 +54,7 @@ Click the extensions icon in the browser toolbar and select your application.
 
 The menu should show the name, the description and the **Authorize Instance** button.
 
-![Example GREEN-API Connector menu with the Authorize Instance button (Russian labels)](images/store-popup.png)
+![Example GREEN-API Connector menu with the Authorize Instance button](images/store-popup.png)
 
 ## 4. Start the authorization
 
@@ -63,7 +63,7 @@ The menu should show the name, the description and the **Authorize Instance** bu
 3. Click **Link device** and log in in the WhatsApp window that opens.
 4. Do not close the windows until the authorization is complete.
 
-![Example form with the instance ID and API token fields and the Link device button (Russian labels)](images/store-authorization.png)
+![Example form with the instance ID and API token fields and the Link device button](images/store-authorization.png)
 
 The menu and form images are taken from the preview of the standard GREEN-API Connector. A White label will have your name, logo and colors.
 
