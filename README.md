@@ -2,8 +2,7 @@
 
 # GREEN-API Connector
 
-> **Версия на русском языке**  
-> Версия README на русском языке доступна в [`README.ru.md`](README.ru.md)  
+[Версия на русском языке](README.ru.md) 
 
 The extension helps retrieve authorization data for a WhatsApp instance when it cannot be authorized by the standard methods. For example, when login is only possible via Passkey.
 

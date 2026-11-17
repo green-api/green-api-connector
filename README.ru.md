@@ -2,8 +2,7 @@
 
 # GREEN-API Connector
 
-> **English Version**  
-> The English version of README is available at [`README.md`](README.md)  
+[English Version](README.md)   
 
 Расширение помогает получить данные для авторизации WhatsApp инстанса, когда нет возможности совершить авторизацию через стандартные способы. Например, когда вход возможен только через технологию Passkey. 
 
