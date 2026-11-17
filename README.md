@@ -28,7 +28,7 @@ npm run release -- --lang en --default-brand
 
 The script installs missing dependencies and creates the `release/<name>-<version>/` folder. The `--default-brand` option builds the standard extension.
 
-After building, install the extension [in your browser](docs/install.browser.md) or submit it for [publication in the Chrome Web Store and Firefox Add-ons](docs/publishing.md).
+After building, install the extension [in your browser](docs/install.browser.md) or submit it for [publication in the Chrome Web Store](docs/publishing.chrome.md).
 
 ### 2. Create your own "White label" application
 
@@ -48,7 +48,7 @@ The local editor page opens in your browser. If it does not open automatically, 
 4. Click **Build extension** and wait for it to finish. The editor shows the release path and an **Open extension folder** button.
 5. Close the editor tab after the build — the local server stops.
 
-After building, install the extension [in your browser](docs/install.browser.md) or submit it for [publication in the Chrome Web Store and Firefox Add-ons](docs/publishing.md).
+After building, install the extension [in your browser](docs/install.browser.md) or submit it for [publication in the Chrome Web Store](docs/publishing.chrome.md).
 
 ### Working with the release build
 
