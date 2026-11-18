@@ -7,12 +7,20 @@
     "message": "An extension for completing authentication for your instance. Read the documentation for more details about the extension.",
     "description": "Extension description"
   },
+  "debugExtDescription": {
+    "message": "This extension was built in debug mode. Warning! Not for publishing.",
+    "description": "Extension description for debug builds"
+  },
+  "debugExtNameSuffix": {
+    "message": "(debug - not for publishing)",
+    "description": "Suffix appended to the extension name in debug builds"
+  },
   "openInstanceAuthForm": {
     "message": "Authorize Instance",
     "description": "Button to open the instance authorization popout"
   },
   "instanceAuthFormDesc": {
-    "message": "Enter the credentials of the instance you want to authorize via the extension into the form. Then click the 'Link Device' button.\nIf you are already logged into the web version, log out before authorizing the instance.\nDo not close this window until the synchronization is complete!",
+    "message": "• Enter the credentials of the instance you want to authorize via the extension into the form.\n• Click the 'Link Device' button.\n• If you are already logged into the web version, log out before authorizing the instance.\n• Do not close this window until the synchronization is complete!",
     "description": "Description for instance authorization popout"
   },
   "idInstancePlaceholder": {

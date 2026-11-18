@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "build:whatsapp": "cross-env MESSENGER=whatsapp vite build",
-    "build:max": "cross-env MESSENGER=max vite build"
+    "build:max": "cross-env MESSENGER=max vite build",
+    "release": "node scripts/release.mjs",
+    "release:qr": "node scripts/release.mjs --brand qr-connector",
+    "preview": "node scripts/release.mjs --preview-only",
+    "brand-editor": "node scripts/brand-editor.mjs"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",

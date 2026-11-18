@@ -27,6 +27,7 @@ const messengerManifest = getMessengerManifest(MESSENGER);
 export default defineManifest({
   manifest_version: 3,
   name: '__MSG_extName__',
+  description: '__MSG_extDescription__',
   default_locale: 'en',
   version,
   permissions: ['scripting', 'tabs', 'browsingData'],
@@ -66,8 +67,12 @@ export default defineManifest({
   },
   browser_specific_settings: {
     gecko: {
+      // Official GREEN-API build only; a white label sets its own ID in branding/brand.json (firefoxId).
       id: "@green-api-connector",
       strict_min_version: '128.0',
+      // Required by addons.mozilla.org for new add-ons: the session (authentication data) leaves the device -
+      // it is sent to the endpoint the user's page specifies.
+      data_collection_permissions: { required: ['authenticationInfo'] },
     },
   },
 })
