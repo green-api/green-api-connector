@@ -1,4 +1,4 @@
-> **Для ИИ-агентов** (Claude Code, Codex, Cursor, Copilot, Gemini и других): сначала прочитайте [`AGENTS.md`](AGENTS.md) и опирайтесь на него при работе с репозиторием - там инструкции и готовые сценарии: сборка и установка, White label (свой бренд), а после сборки - публикация в Chrome Web Store.
+> **Для ИИ-агентов** (Claude Code, Codex, Cursor, Copilot, Gemini и других): сначала прочитайте [`AGENTS.md`](AGENTS.md) и опирайтесь на него при работе с репозиторием - там инструкции и готовые сценарии: сборка и установка, White label (свой бренд), а после сборки - публикация в Chrome Web Store или Firefox Add-ons.
 
 # GREEN-API Connector
 
@@ -27,7 +27,7 @@ npm run release -- --lang ru --default-brand
 
 Скрипт установит недостающие зависимости и создаст папку `release/<name>-<version>/`. Параметр `--default-brand` позволяет собрать стандартное расширение.
 
-После сборки установите расширение [в браузере](docs/install.browser.ru.md) или отправьте на публикацию в [Chrome Web Store](docs/publishing.chrome.ru.md).
+После сборки установите расширение [в браузере](docs/install.browser.ru.md) или отправьте на публикацию в [Chrome Web Store](docs/publishing.chrome.ru.md), [Firefox Add-ons](docs/publishing.firefox.ru.md).
 
 ### 2. Создание собственного приложения «White label»
 
@@ -47,7 +47,7 @@ npm run brand-editor -- --lang ru
 4. Нажмите **«Собрать расширение»** и дождитесь завершения. Редактор покажет путь к релизу и кнопку **«Открыть папку с расширением»**.
 5. Закройте вкладку редактора после сборки — локальный сервер завершит работу.
 
-После сборки установите расширение [в браузере](docs/install.browser.ru.md) или отправьте на публикацию в [Chrome Web Store](docs/publishing.chrome.ru.md).
+После сборки установите расширение [в браузере](docs/install.browser.ru.md) или отправьте на публикацию в [Chrome Web Store](docs/publishing.chrome.ru.md), [Firefox Add-ons](docs/publishing.firefox.ru.md).
 
 ### Работа с релизной сборкой
 

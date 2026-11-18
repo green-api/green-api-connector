@@ -30,9 +30,6 @@ Before uploading, check:
 
 ## Step 2. Publish to the Chrome Web Store
 
-Upload the `-chrome.zip`, fill in the item's tabs and submit it for review. For a B2B tool, the Unlisted visibility
-usually fits: the extension is available only via a link.
-
 1. Register in the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole) with your
    company's Google account and pay the one-time fee ([Register your developer account](https://developer.chrome.com/docs/webstore/register)).
    The contact email cannot be changed later - choose a shared address, not a personal one

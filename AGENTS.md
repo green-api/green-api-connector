@@ -36,14 +36,14 @@ Rules for this menu:
 - **Only these two options.** Don't add other items - no "change the code", "develop / integrate", "publish to the
   store" or anything derived from the maintainer sections below. Those sections are reference for when a user
   explicitly asks for a code change; never present code work as an option to a client.
-- **Publication in the Chrome Web Store (Scenario 3) is offered only AFTER a successful build** (end of Scenario 1
-  or 2). Don't mention it in the start menu.
+- **Publication in the Chrome Web Store (Scenario 3) or Firefox Add-ons (Scenario 4) is offered only AFTER a
+  successful build** (end of Scenario 1 or 2). Don't mention it in the start menu.
 - Describing the repository is fine (one or two sentences on what the extension does), but don't summarise the
   tooling internals, git state or unreleased work unless asked - go to the menu.
 
 If the request clearly matches a scenario ("build it", "install it" → 1; "my logo / my company name / my colors /
 white label / rebrand" → 2), go straight into it without asking. If the user asks to publish to the Chrome Web Store
-right away, go to Scenario 3 - its step 1 makes sure there is a release first. Run commands and edit files
+right away, go to Scenario 3; to Firefox Add-ons - Scenario 4. Their step 1 makes sure there is a release first. Run commands and edit files
 yourself; ask the user only for what you cannot know.
 
 Hint: `git remote -v` - if `origin` is not `green-api/green-api-connector`, the user is most likely in a client fork.
@@ -78,7 +78,7 @@ white label, never copy them into `branding/`. A client's brand always comes fro
 
 ### What the client gets: the release folder
 
-Scenarios 1 and 2 end with a **release folder** (Scenario 3 publishes it) (`release/` is gitignored):
+Scenarios 1 and 2 end with a **release folder** (Scenarios 3 and 4 publish it) (`release/` is gitignored):
 
 ```
 release/<name>-<version>/          e.g. release/acme-connector-1.3.0/
@@ -96,7 +96,8 @@ release/<name>-<version>/          e.g. release/acme-connector-1.3.0/
 
 **After every build, tell the user explicitly that 2 versions are available - for Chrome (`chrome/`) and for
 Firefox (`firefox/`)** - and which ZIP is for which store. **Only now** (after a successful build) offer the
-[Chrome Web Store publication](#scenario-3---publish-to-the-chrome-web-store) as the next step.
+publication as the next step: [Chrome Web Store](#scenario-3---publish-to-the-chrome-web-store) and/or
+[Firefox Add-ons](#scenario-4---publish-to-firefox-add-ons).
 
 Why two builds: the vite build emits one manifest for both browsers (`background.service_worker` + Firefox's
 `background.scripts`). Chromium-based browsers older than Chrome 121 and some others (e.g. Yandex Browser) refuse
@@ -124,8 +125,9 @@ links between them. The script checks Node.js and installs missing dependencies 
      *Load unpacked* → select `chrome/`.
    - **Install in Firefox:** `about:debugging#/runtime/this-firefox` → *Load Temporary Add-on…* →
      `firefox/manifest.json` (temporary add-ons disappear on restart; a permanent install needs signing on
-     addons.mozilla.org - see White label, Firefox ID).
-   - **Stores:** `*-chrome.zip` for the Chrome Web Store (see Scenario 3), `*-firefox.zip` for Firefox Add-ons.
+     addons.mozilla.org - see Scenario 4).
+   - **Stores:** `*-chrome.zip` for the Chrome Web Store (see Scenario 3), `*-firefox.zip` for Firefox Add-ons
+     (see Scenario 4).
    - **Look:** `preview.html`.
    - **Test the authorization end-to-end:** see [Testing with the test page](#testing-with-the-test-page).
 4. **Smoke check** with the user: the toolbar icon appears; clicking it shows the name, description and the
@@ -164,7 +166,8 @@ git fetch upstream
 git merge upstream/master
 ```
 
-**1. Optionally ask in chat:** will they publish to Firefox Add-ons (step 4), does their own web app on their own
+**1. Optionally ask in chat:** will they publish to Firefox Add-ons (then they enter a Firefox ID in the editor - see
+Firefox ID below), does their own web app on their own
 domain call the extension (step 4). Everything else happens in the editor.
 
 **2. Start the editor in the background** (a small local server that waits for the user):
@@ -301,6 +304,48 @@ and don't try to log in for them.**
 7. **After submission:** review usually takes from a few days to a few weeks; the client gets an email. If
    rejected, read the reason in the dashboard, fix (often: permission justification, privacy policy, description),
    rebuild with a higher version and resubmit. Updates later: steps 1, 2, 6 with a bumped version.
+
+Human-facing guide with the store form texts: `docs/publishing.chrome.ru.md` / `docs/publishing.chrome.md`.
+
+### Scenario 4 - Publish to Firefox Add-ons
+
+Offered only after a successful build (see above), or when the user asks for it directly.
+
+Goal: the client's extension published (or updated) on addons.mozilla.org (AMO). The agent prepares everything and
+guides; the client does the steps in their own Mozilla account - **never ask for their password or 2FA codes, and
+don't try to log in for them.** Human-facing guide: `docs/publishing.firefox.ru.md` / `docs/publishing.firefox.md`.
+
+1. **Firefox ID first.** `browser_specific_settings.gecko.id` must be the client's own ID, not
+   `@green-api-connector` (reserved for the official GREEN-API build; the first AMO upload claims an ID forever).
+   The client sets it in the brand editor (field "Firefox ID", formats `connector@your-company.com` or `@connector`,
+   saved as `firefoxId` in `branding/brand.json`) - see [White label](#scenario-2---white-label). Only GREEN-API's own
+   official build keeps `@green-api-connector`.
+2. **Release.** Fresh release (Scenario 1 or 2; mind the [Saved brand](#saved-brand-in-branding---check-it-first)
+   question). AMO gets `<name>-<version>-firefox.zip`. For an **update**, bump the version first
+   (`npm version patch --no-git-tag-version`, ask first), then rebuild.
+3. **Check before upload:** `firefox/manifest.json` has the client's `gecko.id` and
+   `data_collection_permissions: { required: ["authenticationInfo"] }` (already in `manifest.config.ts`); `DEV_MODE`
+   is `false` and the ZIP is NOT from `test/`; name and icons are the client's own.
+4. **Source code archive** - required, because Vite bundles and minifies the code. The reviewer must be able to
+   build exactly the same ZIP from it, so it must contain `branding/`. Ask before committing (commit only when the
+   user agrees), then from the repository root:
+   ```bash
+   git archive --format=zip -o release/<name>-<version>-source.zip HEAD
+   ```
+   (only files in git - no `node_modules/`, `dist/`, `release/`). If the user doesn't want to commit, build the
+   archive from the working tree instead (`git ls-files --cached --others --exclude-standard`). If you can, verify:
+   unpack it into an empty folder, `npm ci`, `npm run release -- --lang en`, compare `firefox/` with the release.
+5. **Upload and submit** (the client does it; give them the texts from the guide): Developer Hub → *Submit a New
+   Add-on* → *On this site* → upload the `-firefox.zip` (automatic validation: errors must be fixed, warnings don't
+   block; compatibility - Firefox only, not Android) → "Do you need to submit source code?" - **Yes**, upload the
+   source archive → *Describe Add-on*: summary (≤ 250), description, category *Social & Communication*, support
+   email / website, license *MIT* → *This add-on has a Privacy Policy* (policy text) → *Notes for Reviewers*: the
+   build instructions in English (Node/npm versions, `npm ci`, `npm run release -- --lang en`, result
+   `release/<name>-<version>/firefox/`; the "Unsafe assignment to innerHTML" warnings come from react-dom) →
+   *Submit Version*.
+6. **After submission:** signing usually within 24 hours, a manual review may take longer; the client gets an email.
+   If rejected, fix (often: source code that doesn't reproduce the ZIP, privacy policy, description), bump the
+   version, rebuild, make a new source archive and upload a new version.
 
 ### Testing with the test page
 

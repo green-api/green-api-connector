@@ -30,9 +30,6 @@
 
 ## Шаг 2. Опубликовать в Chrome Web Store
 
-Загрузите `-chrome.zip`, заполните вкладки продукта и отправьте на проверку. Для B2B-инструмента обычно подходит
-видимость Unlisted: расширение доступно только по ссылке.
-
 1. Зарегистрируйтесь в [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole) под
    Google-аккаунтом компании и оплатите разовый взнос ([Зарегистрируйте свою учетную запись разработчика](https://developer.chrome.com/docs/webstore/register)).
    Email для связи потом не меняется — выберите общий адрес, а не личный

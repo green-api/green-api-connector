@@ -1,4 +1,4 @@
-> **For AI agents** (Claude Code, Codex, Cursor, Copilot, Gemini and others): read [`AGENTS.md`](AGENTS.md) first and rely on it when working with this repository - it contains the instructions and ready-made scenarios: build & install, White label (your own brand), and - after the build - publishing to the Chrome Web Store.
+> **For AI agents** (Claude Code, Codex, Cursor, Copilot, Gemini and others): read [`AGENTS.md`](AGENTS.md) first and rely on it when working with this repository - it contains the instructions and ready-made scenarios: build & install, White label (your own brand), and - after the build - publishing to the Chrome Web Store or Firefox Add-ons.
 
 # GREEN-API Connector
 
@@ -27,7 +27,7 @@ npm run release -- --lang en --default-brand
 
 The script installs missing dependencies and creates the `release/<name>-<version>/` folder. The `--default-brand` option builds the standard extension.
 
-After building, install the extension [in your browser](docs/install.browser.md) or submit it for [publication in the Chrome Web Store](docs/publishing.chrome.md).
+After building, install the extension [in your browser](docs/install.browser.md) or submit it for publication in the [Chrome Web Store](docs/publishing.chrome.md) or [Firefox Add-ons](docs/publishing.firefox.md).
 
 ### 2. Create your own "White label" application
 
@@ -42,12 +42,12 @@ npm run brand-editor -- --lang en
 The local editor page opens in your browser. If it does not open automatically, follow the URL printed in the terminal.
 
 1. If an **Install dependencies** button is shown, click it and wait for the full editor to load.
-2. Upload your logo (a square 512×512 PNG or SVG is recommended), fill in the required description fields and choose the primary color. If you will publish the extension to Firefox Add-ons, enter your own **Firefox ID** - a unique add-on ID in one of formats - `connector@your-company.com` or `@connector`.
+2. Upload your logo (a square 512×512 PNG or SVG is recommended), fill in the required description fields and choose the primary color. If you will publish the extension to Firefox Add-ons, enter your own **Firefox ID** - a unique add-on ID in one of these formats - `connector@your-company.com` or `@connector`.
 3. Click **Save**. The editor writes the brand to the `branding/` folder.
 4. Click **Build extension** and wait for it to finish. The editor shows the release path and an **Open extension folder** button.
 5. Close the editor tab after the build — the local server stops.
 
-After building, install the extension [in your browser](docs/install.browser.md) or submit it for [publication in the Chrome Web Store](docs/publishing.chrome.md).
+After building, install the extension [in your browser](docs/install.browser.md) or submit it for publication in the [Chrome Web Store](docs/publishing.chrome.md) or [Firefox Add-ons](docs/publishing.firefox.md).
 
 ### Working with the release build
 
