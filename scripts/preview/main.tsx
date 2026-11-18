@@ -86,6 +86,7 @@ const initialBrand: Brand = {
   name: Object.fromEntries(langs.map((l) => [l, config.locales[l]?.extName?.message ?? ''])),
   description: Object.fromEntries(langs.map((l) => [l, config.locales[l]?.extDescription?.message ?? ''])),
   colors: config.colors,
+  firefoxId: config.editor?.firefoxId ?? '',
   icons: config.icons,
 }
 

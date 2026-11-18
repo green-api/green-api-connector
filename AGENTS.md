@@ -143,7 +143,8 @@ folder** so the fork can merge updates from upstream without conflicts.
 a client**. The client's brand lives only in `branding/`:
 
 ```
-branding/brand.json        { "name": {"en","ru"}, "description": {"en","ru"}, "colors": {"primary","primaryDark"} }
+branding/brand.json        { "name": {"en","ru"}, "description": {"en","ru"}, "colors": {"primary","primaryDark"},
+                             "firefoxId"?: "connector@acme.com" }
 branding/icons/icon16.png  icon32.png  icon48.png  icon128.png
 ```
 
@@ -178,9 +179,10 @@ them through three steps:
    opens as a small page with this button; it runs `npm ci` (falls back to `npm install`) and then reloads into
    the full editor. If everything is installed, this step is already ticked.
 2. **"Save"** - after uploading the logo (icons 16/32/48/128 are generated in the browser), entering the name and
-   description (EN and RU, current GREEN-API values shown as examples) and picking colors; the preview on the right
-   updates live. Save validates everything (lengths ≤ 45 / 132, valid colors, contrast warning, "still GREEN-API?"
-   question) and writes **only** `branding/brand.json` and `branding/icons/icon*.png`. Nothing else changes.
+   description (EN and RU, current GREEN-API values shown as examples), picking colors and - only if they publish to
+   Firefox Add-ons - entering the **Firefox ID**; the preview on the right updates live. Save validates everything
+   (lengths ≤ 45 / 132, valid colors, contrast warning, "still GREEN-API?" question, Firefox ID format) and writes
+   **only** `branding/brand.json` and `branding/icons/icon*.png`. Nothing else changes.
 3. **"Build extension"** (the Save button turns into it after saving; editing the form turns it back into Save) -
    builds the release folder and shows the progress. Then the form becomes read-only and shows the release path
    (click to copy) and the **"Open extension folder"** button; the page asks the user to close the tab to get back
@@ -204,11 +206,13 @@ from the current `branding/`. To go back to the GREEN-API brand, delete `brandin
   (subdomains included). Add the client's domain **only if** their own web app will call the extension; this widens
   who can trigger an import, so confirm with the user. Keep the GREEN-API domains if they still use the GREEN-API
   console.
-- **Firefox ID (only if publishing to Firefox Add-ons)** - `browser_specific_settings.gecko.id` in
-  `manifest.config.ts` is `@green-api-connector` - the ID reserved for the official GREEN-API build. Add-on IDs on
-  addons.mozilla.org are unique and the first upload claims one, so a fork that publishes its own Firefox build
-  must use its own ID, e.g. `connector@acme.com`, and never upload under `@green-api-connector`. Not needed for
-  local installs or for Chrome/Edge.
+
+**Firefox ID (only if publishing to Firefox Add-ons)** - set in the editor (field "Firefox ID", saved as `firefoxId`
+in `branding/brand.json`; the build puts it into `browser_specific_settings.gecko.id`). Without it the build keeps
+`@green-api-connector` from `manifest.config.ts` - the ID reserved for the official GREEN-API build. Add-on IDs on
+addons.mozilla.org are unique and the first upload claims one forever, so a fork that publishes its own Firefox
+build must use its own ID, e.g. `connector@acme.com` (the editor refuses `@green-api-connector`). Not needed for
+local installs or for Chrome/Edge. Don't edit the ID in `manifest.config.ts`.
 
 **5. Commit (if the user wants)** - `git add branding/` (+ any step 4 changes), one commit, e.g.
 `chore(branding): Acme logo, name, colors`.
@@ -242,7 +246,7 @@ git fetch upstream
 git merge upstream/master
 ```
 The brand is only in `branding/`, which upstream doesn't have, so it merges cleanly. Conflicts are only possible in
-step 4 edits (`TRUSTED_DOMAINS` in `config.ts`, the Firefox ID in `manifest.config.ts`): keep the client's value
+step 4 edits (`TRUSTED_DOMAINS` in `config.ts`): keep the client's value
 **and** the upstream changes around it. Then `npm run release`.
 
 ### Scenario 3 - Publish to the Chrome Web Store

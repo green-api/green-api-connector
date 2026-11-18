@@ -10,5 +10,6 @@
   "colors": {
     "primary": "#0046c5",
     "primaryDark": "#0046c5"
-  }
+  },
+  "firefoxId": "@qr-connector"
 }

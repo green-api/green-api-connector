@@ -15,8 +15,13 @@ export interface Brand {
   name: Record<string, string>
   description: Record<string, string>
   colors: { primary: string; primaryDark: string }
+  // Firefox add-on ID for addons.mozilla.org ('' = keep the official one; fine for local installs and Chrome)
+  firefoxId: string
   icons: Record<string, string>
 }
+
+// Same rule as FIREFOX_ID_RE in scripts/lib/branding.mjs (email-like or {GUID}).
+const FIREFOX_ID_RE = /^(?:[a-zA-Z0-9._-]*@[a-zA-Z0-9._-]+|\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\})$/
 
 const ICON_SIZES = [16, 32, 48, 128]
 const BUILD_STEPS = ['build', 'testBuild', 'pages', 'zip'] as const
@@ -45,6 +50,10 @@ const TEXT = {
     dark: 'Dark theme color',
     lowContrast: 'Low contrast with the white button text',
     pickDarker: 'pick a darker shade.',
+    firefox: 'Firefox ID',
+    firefoxHint: 'Only if you publish the extension on Firefox Add-ons (addons.mozilla.org): a unique add-on ID in one of two formats - connector@your-company.com or @connector. The first upload claims it forever - choose it once and do not change it. Leave empty for Chrome and local installs.',
+    firefoxInvalid: 'A unique add-on ID in one of two formats - connector@your-company.com or @connector',
+    firefoxReserved: 'This ID belongs to the official GREEN-API extension - use your own',
     reset: 'Reset',
     stepDeps: 'Dependencies installed',
     stepSave: 'Brand saved',
@@ -91,6 +100,10 @@ const TEXT = {
     dark: 'Цвет для тёмной темы',
     lowContrast: 'Слабый контраст с белым текстом кнопки',
     pickDarker: 'выберите оттенок темнее.',
+    firefox: 'Firefox ID',
+    firefoxHint: 'Только если публикуете расширение в Firefox Add-ons (addons.mozilla.org): уникальный ID дополнения в одном из двух форматов - connector@your-company.com или @connector. Первая загрузка закрепляет его навсегда - выберите один раз и не меняйте. Для Chrome и локальной установки оставьте пустым.',
+    firefoxInvalid: 'Уникальный ID дополнения в одном из двух форматов - connector@your-company.com или @connector',
+    firefoxReserved: 'Этот ID принадлежит официальному расширению GREEN-API - укажите свой',
     reset: 'Сбросить',
     stepDeps: 'Зависимости установлены',
     stepSave: 'Бренд сохранён',
@@ -261,11 +274,18 @@ export function BrandEditor({ lang, langs, brand, initial, config, onChange }: P
   }
 
   const fieldError = (value: string, max: number) => (!value.trim() ? t.required : value.length > max ? t.tooLong : null)
+  const firefoxId = brand.firefoxId.trim()
+  const firefoxError = !firefoxId ? null
+    : firefoxId.length > config.firefoxIdMax ? t.tooLong
+    : !FIREFOX_ID_RE.test(firefoxId) ? t.firefoxInvalid
+    : firefoxId.toLowerCase() === config.officialFirefoxId ? t.firefoxReserved
+    : null
   const errors = langs.flatMap((l) => [
     fieldError(brand.name[l] ?? '', config.nameMax),
     fieldError(brand.description[l] ?? '', config.descriptionMax),
   ]).filter(Boolean).length
     + (isHex(brand.colors.primary) ? 0 : 1) + (isHex(brand.colors.primaryDark) ? 0 : 1)
+    + (firefoxError ? 1 : 0)
 
   const setPrimary = (value: string) => set({
     colors: { primary: value, primaryDark: separateDark ? brand.colors.primaryDark : value },
@@ -284,6 +304,7 @@ export function BrandEditor({ lang, langs, brand, initial, config, onChange }: P
       name: Object.fromEntries(langs.map((l) => [l, brand.name[l].trim()])),
       description: Object.fromEntries(langs.map((l) => [l, brand.description[l].trim()])),
       colors: { primary: brand.colors.primary.toLowerCase(), primaryDark: brand.colors.primaryDark.toLowerCase() },
+      firefoxId,
       icons: brand.icons,
     }
     try {
@@ -467,6 +488,16 @@ export function BrandEditor({ lang, langs, brand, initial, config, onChange }: P
               {darkContrast < 3 && <p className="pv-warn"><Icon path={mdiAlertOutline} size={0.6} /> {t.lowContrast} ({darkContrast.toFixed(1)}:1)</p>}
             </>
           )}
+        </fieldset>
+
+        <fieldset className="pv-field" disabled={locked}>
+          <legend>{t.firefox}</legend>
+          <label className="pv-input-row pv-input-row-single">
+            <input className={firefoxError ? 'pv-invalid' : ''} value={brand.firefoxId} placeholder="connector@your-company.com"
+              spellCheck={false} onChange={(e) => set({ firefoxId: e.target.value })} />
+          </label>
+          {firefoxError && <p className="pv-warn"><Icon path={mdiAlertOutline} size={0.6} /> {firefoxError}</p>}
+          <p className="pv-hint">{t.firefoxHint}</p>
         </fieldset>
       </div>
 

@@ -46,7 +46,7 @@ In **Edge**, follow the same steps on the `edge://extensions` page. For Yandex B
 
 A temporary installation lasts **until Firefox restarts**. A permanent installation requires publishing to Firefox Add-ons.
 
-If you publish your own White label to Firefox Add-ons, set a unique `browser_specific_settings.gecko.id` in [`manifest.config.ts`](../manifest.config.ts) instead of `@green-api-connector` and rebuild the extension. You do not need to change the ID for a temporary local installation.
+If you publish your own White label to Firefox Add-ons, enter a **Firefox ID** in the brand editor - a unique add-on ID in one of two formats - `connector@your-company.com` or `@connector` - instead of `@green-api-connector` and rebuild the extension. You do not need to change the ID for a temporary local installation.
 
 ## 3. Open the extension menu
 

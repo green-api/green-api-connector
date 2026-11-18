@@ -3,7 +3,8 @@
 Extra GREEN-API builds of the extension under other names. Same format as a client's `branding/`:
 
 ```
-brands/<id>/brand.json        { "name": {"en","ru"}, "description": {"en","ru"}, "colors": {"primary","primaryDark"} }
+brands/<id>/brand.json        { "name": {"en","ru"}, "description": {"en","ru"}, "colors": {"primary","primaryDark"},
+                                "firefoxId"?: "@preset-id" }
 brands/<id>/icons/icon16.png  icon32.png  icon48.png  icon128.png
 ```
 

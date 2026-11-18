@@ -12,9 +12,11 @@ import { tmpdir } from 'node:os'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { deflateRawSync } from 'node:zlib'
-import { BRANDING_DIR, ICON_SIZES, brandMessagesJson, brandThemeCss, loadBranding } from './branding.mjs'
+import {
+  BRANDING_DIR, FIREFOX_ID_MAX, FIREFOX_ID_RE, ICON_SIZES, OFFICIAL_FIREFOX_ID, brandMessagesJson, brandThemeCss, loadBranding,
+} from './branding.mjs'
 
-export { ICON_SIZES }
+export { FIREFOX_ID_MAX, ICON_SIZES, OFFICIAL_FIREFOX_ID }
 
 export const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 export const RELEASE_DIR = join(ROOT, 'release')
@@ -200,7 +202,7 @@ export function readIcons() {
 // ---- brand data from the brand editor -> branding/ -------------------------------------------------------------------
 //
 // The editor posts { schema: 1, name: {en, ru}, description: {en, ru}, colors: {primary, primaryDark},
-// icons: {16|32|48|128: "data:image/png;base64,..."} }; saveBranding() validates nothing itself - call
+// firefoxId?: string, icons: {16|32|48|128: "data:image/png;base64,..."} }; saveBranding() validates nothing itself - call
 // validateBrand() first - and writes branding/brand.json (texts + colors) and branding/icons/*.png.
 
 const HEX_RE = /^#[0-9a-fA-F]{6}$/
@@ -226,6 +228,14 @@ export function validateBrand(brand) {
   for (const key of ['primary', 'primaryDark']) {
     if (!HEX_RE.test(brand.colors?.[key] ?? '')) errors.push(`colors.${key} must be a #rrggbb color`)
   }
+  const firefoxId = brand.firefoxId ?? ''
+  if (typeof firefoxId !== 'string') errors.push('firefoxId must be a string')
+  else if (firefoxId.trim()) {
+    const id = firefoxId.trim()
+    if (id.length > FIREFOX_ID_MAX) errors.push(`firefoxId is longer than ${FIREFOX_ID_MAX} characters`)
+    else if (!FIREFOX_ID_RE.test(id)) errors.push('firefoxId must look like connector@your-company.com or @connector')
+    else if (id.toLowerCase() === OFFICIAL_FIREFOX_ID) errors.push(`firefoxId ${OFFICIAL_FIREFOX_ID} is reserved for the official GREEN-API build`)
+  }
   for (const size of ICON_SIZES) {
     const buffer = iconBufferFromDataUrl(brand.icons?.[size])
     const dims = buffer && pngSize(buffer)
@@ -246,6 +256,8 @@ export function saveBranding(brand) {
     description: Object.fromEntries(langs.map((l) => [l, brand.description[l].trim()])),
     colors: { primary: brand.colors.primary.toLowerCase(), primaryDark: brand.colors.primaryDark.toLowerCase() },
   }
+  const firefoxId = typeof brand.firefoxId === 'string' ? brand.firefoxId.trim() : ''
+  if (firefoxId) data.firefoxId = firefoxId
   const written = []
   const write = (path, content) => {
     writeFileSync(path, content)

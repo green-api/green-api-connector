@@ -18,10 +18,11 @@
 import { randomBytes } from 'node:crypto'
 import { createServer } from 'node:http'
 import {
-  BRANDING_PATH, CLIENT_MESSENGER, DESCRIPTION_MAX, MIN_NODE_MAJOR, NAME_MAX, RELEASE_STEPS, bundlePages, saveBranding,
-  createRelease, fail, getArg, installDependencies, localeLangs, missingDependencies, nodeVersionOk, openWithOs,
-  pageConfig, readBrand, renderPage, validateBrand,
+  BRANDING_PATH, CLIENT_MESSENGER, DESCRIPTION_MAX, FIREFOX_ID_MAX, MIN_NODE_MAJOR, NAME_MAX, OFFICIAL_FIREFOX_ID,
+  RELEASE_STEPS, ROOT, bundlePages, saveBranding, createRelease, fail, getArg, installDependencies, localeLangs,
+  missingDependencies, nodeVersionOk, openWithOs, pageConfig, readBrand, renderPage, validateBrand,
 } from './lib/kit.mjs'
+import { loadBranding } from './lib/branding.mjs'
 
 const TAG = 'brand-editor'
 const MAX_BODY = 8 * 1024 * 1024
@@ -186,6 +187,9 @@ function editorPage() {
       api: { status: '/api/status', save: '/api/save', build: '/api/build', openFolder: '/api/open-folder', closed: '/api/closed' },
       nameMax: NAME_MAX,
       descriptionMax: DESCRIPTION_MAX,
+      firefoxId: loadBranding(ROOT)?.firefoxId ?? '',
+      firefoxIdMax: FIREFOX_ID_MAX,
+      officialFirefoxId: OFFICIAL_FIREFOX_ID,
     },
   }), pages)
 }

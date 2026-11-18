@@ -8,6 +8,10 @@ export interface EditorConfig {
   api: { status: string; save: string; build: string; openFolder: string; closed: string }
   nameMax: number
   descriptionMax: number
+  // firefoxId saved in branding/brand.json ('' = none, the build keeps officialFirefoxId)
+  firefoxId: string
+  firefoxIdMax: number
+  officialFirefoxId: string
 }
 
 export interface PageConfig {

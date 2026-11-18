@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
 
 import manifest, { MESSENGER } from './manifest.config'
-import { brandHtmlTitle, brandMessagesJson, brandThemeCss, loadBranding } from './scripts/lib/branding.mjs'
+import { brandHtmlTitle, brandManifestJson, brandMessagesJson, brandThemeCss, loadBranding } from './scripts/lib/branding.mjs'
 
 // White label: applies branding/ (if present) on top of the default brand in the BUILD OUTPUT only -
 // public/_locales, public/icons, src/shared/theme.css and the HTML titles in the repo stay untouched.
@@ -34,6 +34,10 @@ function brandingOverrides(): Plugin {
             }
             for (const [size, source] of Object.entries(branding.icons)) {
                 copyFileSync(source, join(outDir, 'icons', `icon${size}.png`))
+            }
+            const manifestPath = join(outDir, 'manifest.json')
+            if (existsSync(manifestPath)) {
+                writeFileSync(manifestPath, brandManifestJson(readFileSync(manifestPath, 'utf-8'), branding))
             }
         },
     }

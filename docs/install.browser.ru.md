@@ -46,7 +46,7 @@
 
 Временная установка действует **до перезапуска Firefox**. Для постоянной установки нужна публикация в Firefox Add-ons.
 
-Если публикуете собственный White label в Firefox Add-ons, задайте уникальный `browser_specific_settings.gecko.id` в [`manifest.config.ts`](../manifest.config.ts) вместо `@green-api-connector` и пересоберите расширение. Для временной локальной установки менять ID не нужно.
+Если публикуете собственный White label в Firefox Add-ons, укажите в конструкторе бренда **Firefox ID** - уникальный ID дополнения в одном из форматов - `connector@your-company.com` или `@connector` - вместо `@green-api-connector` и пересоберите расширение. Для временной локальной установки менять ID не нужно.
 
 ## 3. Откройте меню расширения
 
