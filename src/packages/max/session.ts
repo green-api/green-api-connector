@@ -5,6 +5,11 @@ import { getSession as getSessionDump } from './page-scripts'
 
 const MAX_POLLS = 120
 const POLL_INTERVAL_MS = 2500
+const IDENTITY_NOT_ALLOWED = "'identity' is not allowed"
+
+function hasIdentity(dump: unknown): dump is Record<string, unknown> & { identity: unknown } {
+  return typeof dump === 'object' && dump !== null && 'identity' in dump
+}
 
 export class MaxSession implements MessengerSession {
   private cancelled = false
@@ -72,14 +77,34 @@ export class MaxSession implements MessengerSession {
     this.ctx.finish()
   }
 
+  private postDump(dump: unknown): Promise<Response> {
+    return fetch(this.ctx.endpointUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dump),
+    })
+  }
+
+  private async isIdentityRejected(response: Response): Promise<boolean> {
+    if (response.status !== 400)
+      return false
+    try {
+      const text = await response.clone().text()
+      return text.includes(IDENTITY_NOT_ALLOWED)
+    } catch {
+      return false
+    }
+  }
+
   private async sendDump(dump: unknown): Promise<void> {
     let response: Response
     try {
-      response = await fetch(this.ctx.endpointUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dump),
-      })
+      response = await this.postDump(dump)
+
+      if (!this.cancelled && hasIdentity(dump) && await this.isIdentityRejected(response)) {
+        const { identity: _identity, ...legacyDump } = dump
+        response = await this.postDump(legacyDump)
+      }
     } catch {
       if (this.cancelled)
         return
