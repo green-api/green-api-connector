@@ -81,7 +81,7 @@ white label, never copy them into `branding/`. A client's brand always comes fro
 Scenarios 1 and 2 end with a **release folder** (Scenarios 3 and 4 publish it) (`release/` is gitignored):
 
 ```
-release/<name>-<version>/          e.g. release/acme-connector-1.3.0/
+release/<name>-<version>/          e.g. release/acme-connector-1.4.0/
   chrome/                          the extension for Chrome (also works in Edge, Yandex Browser, Opera)
   firefox/                         the extension for Firefox
   <name>-<version>-chrome.zip      ZIP of chrome/ (manifest.json at the root) for the Chrome Web Store
