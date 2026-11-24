@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 import { crx } from '@crxjs/vite-plugin'
 
 import manifest, { MESSENGER } from './manifest.config'
+import { getTrustedHosts } from './src/shared/config'
 import { brandHtmlTitle, brandManifestJson, brandMessagesJson, brandThemeCss, loadBranding } from './scripts/lib/branding.mjs'
 
 // White label: applies branding/ (if present) on top of the default brand in the BUILD OUTPUT only -
@@ -76,12 +77,13 @@ function crossBrowserManifest(): Plugin {
     }
 }
 
-// Extra trusted domains of the brand - the same list for the manifest and for isTrustedOrigin (src/shared/config.ts).
+// Brand trusted domains (replace TRUSTED_DOMAINS) - for the manifest and isTrustedOrigin.
 const brandTrustedDomains = loadBranding(__dirname)?.trustedDomains ?? []
+const appHosts = getTrustedHosts(brandTrustedDomains)
 
 export default defineConfig({
     define: { __BRAND_TRUSTED_DOMAINS__: JSON.stringify(brandTrustedDomains) },
-    plugins: [brandingOverrides(), react(), crx({ manifest: manifest(brandTrustedDomains) }), crossBrowserManifest()],
+    plugins: [brandingOverrides(), react(), crx({ manifest: manifest(appHosts) }), crossBrowserManifest()],
     publicDir: 'public',
     build: {
         outDir: 'dist',

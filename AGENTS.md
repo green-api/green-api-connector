@@ -167,8 +167,8 @@ git merge upstream/master
 ```
 
 **1. Optionally ask in chat:** will they publish to Firefox Add-ons (then they enter a Firefox ID in the editor - see
-Firefox ID below), does their own web app on their own
-domain call the extension (then they enter it in the editor's "Trusted domains" field - step 4). Everything else happens in the editor.
+Firefox ID below), which domains their web app runs on (they enter them in the editor's "Trusted domains" field -
+step 4). Everything else happens in the editor.
 
 **2. Start the editor in the background** (a small local server that waits for the user):
 ```bash
@@ -205,11 +205,11 @@ of the look - no extra confirmation round is needed. To change the brand later, 
 from the current `branding/`. To go back to the GREEN-API brand, delete `branding/`.
 
 **4. Trusted domains** - the editor's "Trusted domains" field (saved as `trustedDomains` in `branding/brand.json`):
-extra domains whose pages may control the extension, **added** to `TRUSTED_DOMAINS` in `src/shared/config.ts` (the
-GREEN-API domains stay trusted) and trusted the same way - subdomains included, https only. Add the client's domain
-**only if** their own web app will call the extension; this widens who can trigger an import, so confirm with the
-user. Settle it **before the first publication**: a domain added in an update disables a published extension in
-Chrome until each user accepts the new permissions. Don't edit `TRUSTED_DOMAINS` for a client.
+the domains of the client's web app whose pages may control the extension - subdomains included, https only. The
+client enters their own domains (at least one; nothing is preset); the list **replaces** `TRUSTED_DOMAINS` in
+`src/shared/config.ts` (the GREEN-API domains of the default build). Settle it **before the first publication**: a
+domain added in an update disables a published extension in Chrome until each user accepts the new permissions.
+Don't edit `TRUSTED_DOMAINS` for a client.
 
 **Firefox ID (only if publishing to Firefox Add-ons)** - set in the editor (field "Firefox ID", saved as `firefoxId`
 in `branding/brand.json`; the build puts it into `browser_specific_settings.gecko.id`). Without it the build keeps
@@ -225,8 +225,9 @@ local installs or for Chrome/Edge. Don't edit the ID in `manifest.config.ts`.
 access): in **one message** ask for the logo (square PNG/SVG, ≥128×128, 512×512 recommended, transparent
 background), name EN/RU (≤ 45; current `GREEN-API Connector`), description EN/RU (≤ 132; show the current texts
 from `public/_locales/*/messages.json` as examples), primary color in hex (optionally a separate dark-theme color;
-current `#3b9702`). Don't invent brand data and don't silently keep GREEN-API values; the logo and name must be the
-client's own. Write `branding/brand.json` and `branding/icons/icon{16,32,48,128}.png` yourself (format above; resize
+current `#3b9702`), the domains of their web app that will call the extension (`trustedDomains`). Don't invent brand
+data and don't silently keep GREEN-API values; the logo and name must be the client's own. Write `branding/brand.json`
+and `branding/icons/icon{16,32,48,128}.png` yourself (format above; resize
 the logo to the exact sizes with any available tool: ImageMagick, Python Pillow, `npx sharp-cli`; don't add image
 libraries to `package.json`), then `npm run preview -- --lang ru` (only `release/preview.html`, no build) and
 **wait for an explicit approval** of the preview before `npm run release`.
@@ -292,8 +293,8 @@ and don't try to log in for them.**
    - *`scripting`:* injects a script into web.whatsapp.com to read the session data after the user logs in.
    - *`tabs`:* opens, focuses and closes the WhatsApp Web window used for the authorization.
    - *`browsingData`:* clears the WhatsApp Web data from the browser after the session has been transferred.
-   - *Host permissions:* web.whatsapp.com - to read the session; the trusted domains (`TRUSTED_DOMAINS` + `trustedDomains` of the brand) - so only
-     those pages can start the authorization.
+   - *Host permissions:* web.whatsapp.com - to read the session; the trusted domains (`trustedDomains` of the brand)
+     - so only those pages can start the authorization.
    - *Remote code:* No.
    - *Data usage:* "Authentication information" is handled; it is sent only to the endpoint specified by the user's
      page, not sold or used for anything else. Tick the required certifications.

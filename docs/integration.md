@@ -137,6 +137,6 @@ npm run brand-editor -- --lang en
 The extension's technical settings are set in the [`src/shared/config.ts`](../src/shared/config.ts) file
 
 - `CONNECTOR_SOURCE` - a marker used when sending requests and filtering incoming requests
-- `TRUSTED_DOMAINS` - domains on which the extension will be active. A white label adds its own in the brand editor ("Trusted domains" -> `trustedDomains` in `branding/brand.json`).
+- `TRUSTED_DOMAINS` - domains on which the extension will be active. A white label enters its own domains in the brand editor ("Trusted domains" -> `trustedDomains` in `branding/brand.json`); they replace this list.
 > For example, if you specify `green-api.com`, the extension will also be active on the `console.green-api.com` page.
 - `DEV_MODE` - allows the extension to work on `http://localhost` and from an HTML file opened in the browser. Turn it off when publishing the extension.

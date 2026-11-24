@@ -12,7 +12,6 @@ export interface EditorConfig {
   firefoxId: string
   firefoxIdMax: number
   officialFirefoxId: string
-  // extra trusted domains of the brand (branding/brand.json), added to TRUSTED_DOMAINS
   trustedDomains: string[]
 }
 

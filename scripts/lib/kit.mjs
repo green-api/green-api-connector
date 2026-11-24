@@ -13,7 +13,7 @@ import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { deflateRawSync } from 'node:zlib'
 import {
-  BRANDING_DIR, FIREFOX_ID_MAX, FIREFOX_ID_RE, ICON_SIZES, OFFICIAL_FIREFOX_ID, brandMessagesJson, brandThemeCss, isDomainList, loadBranding,
+  BRANDING_DIR, FIREFOX_ID_MAX, FIREFOX_ID_RE, ICON_SIZES, OFFICIAL_FIREFOX_ID, brandMessagesJson, brandThemeCss, loadBranding, trustedDomainsError,
 } from './branding.mjs'
 
 export { FIREFOX_ID_MAX, ICON_SIZES, OFFICIAL_FIREFOX_ID }
@@ -202,7 +202,7 @@ export function readIcons() {
 // ---- brand data from the brand editor -> branding/ -------------------------------------------------------------------
 //
 // The editor posts { schema: 1, name: {en, ru}, description: {en, ru}, colors: {primary, primaryDark},
-// firefoxId?: string, trustedDomains?: string[], icons: {16|32|48|128: "data:image/png;base64,..."} }; saveBranding()
+// firefoxId?: string, trustedDomains: string[], icons: {16|32|48|128: "data:image/png;base64,..."} }; saveBranding()
 // validates nothing itself - call validateBrand() first - and writes branding/brand.json and branding/icons/*.png.
 
 const HEX_RE = /^#[0-9a-fA-F]{6}$/
@@ -236,7 +236,8 @@ export function validateBrand(brand) {
     else if (!FIREFOX_ID_RE.test(id)) errors.push('firefoxId must look like connector@your-company.com or @connector')
     else if (id.toLowerCase() === OFFICIAL_FIREFOX_ID) errors.push(`firefoxId ${OFFICIAL_FIREFOX_ID} is reserved for the official GREEN-API build`)
   }
-  if (!isDomainList(brand.trustedDomains ?? [])) errors.push('trustedDomains must be a list of domains like partner.com')
+  const domainsError = trustedDomainsError(brand.trustedDomains)
+  if (domainsError) errors.push(domainsError)
   for (const size of ICON_SIZES) {
     const buffer = iconBufferFromDataUrl(brand.icons?.[size])
     const dims = buffer && pngSize(buffer)
@@ -259,7 +260,7 @@ export function saveBranding(brand) {
   }
   const firefoxId = typeof brand.firefoxId === 'string' ? brand.firefoxId.trim() : ''
   if (firefoxId) data.firefoxId = firefoxId
-  if (brand.trustedDomains?.length) data.trustedDomains = brand.trustedDomains
+  data.trustedDomains = brand.trustedDomains
   const written = []
   const write = (path, content) => {
     writeFileSync(path, content)
