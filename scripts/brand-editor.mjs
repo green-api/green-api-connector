@@ -12,6 +12,7 @@
 //   npm run brand-editor                 opens the editor in the default browser
 //   npm run brand-editor -- --lang ru    page language (en / ru)
 //   npm run brand-editor -- --no-open    just print the URL
+//   npm run brand-editor -- --port 8080  fixed port (default: any free one)
 //
 // Listens on 127.0.0.1 only; the page and every API call carry a random one-time token.
 
@@ -190,6 +191,7 @@ function editorPage() {
       firefoxId: loadBranding(ROOT)?.firefoxId ?? '',
       firefoxIdMax: FIREFOX_ID_MAX,
       officialFirefoxId: OFFICIAL_FIREFOX_ID,
+      trustedDomains: loadBranding(ROOT)?.trustedDomains ?? [],
     },
   }), pages)
 }
@@ -304,7 +306,7 @@ if (state.deps.missing.length) {
   await preparePages()
 }
 
-server.listen(0, '127.0.0.1', () => {
+server.listen(Number(getArg(argv, '--port', 0)), '127.0.0.1', () => {
   const { port } = server.address()
   const pageUrl = `http://127.0.0.1:${port}/?token=${token}`
   console.log(`[${TAG}] brand editor: ${pageUrl}`)

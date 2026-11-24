@@ -76,8 +76,12 @@ function crossBrowserManifest(): Plugin {
     }
 }
 
+// Extra trusted domains of the brand - the same list for the manifest and for isTrustedOrigin (src/shared/config.ts).
+const brandTrustedDomains = loadBranding(__dirname)?.trustedDomains ?? []
+
 export default defineConfig({
-    plugins: [brandingOverrides(), react(), crx({ manifest }), crossBrowserManifest()],
+    define: { __BRAND_TRUSTED_DOMAINS__: JSON.stringify(brandTrustedDomains) },
+    plugins: [brandingOverrides(), react(), crx({ manifest: manifest(brandTrustedDomains) }), crossBrowserManifest()],
     publicDir: 'public',
     build: {
         outDir: 'dist',

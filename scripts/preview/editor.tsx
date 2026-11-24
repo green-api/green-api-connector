@@ -7,7 +7,7 @@ import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from 'r
 import Icon from '@mdi/react'
 import {
   mdiImagePlusOutline, mdiAlertOutline, mdiCheckCircle, mdiContentSaveOutline, mdiRestore,
-  mdiPackageVariantClosed, mdiLoading, mdiCircleOutline, mdiFolderOpenOutline, mdiContentCopy, mdiCheck,
+  mdiPackageVariantClosed, mdiLoading, mdiCircleOutline, mdiFolderOpenOutline, mdiContentCopy, mdiCheck, mdiPlus, mdiClose,
 } from '@mdi/js'
 import type { EditorConfig } from './config'
 
@@ -17,11 +17,19 @@ export interface Brand {
   colors: { primary: string; primaryDark: string }
   // Firefox add-on ID for addons.mozilla.org ('' = keep the official one; fine for local installs and Chrome)
   firefoxId: string
+  // extra trusted domains, one input row each, as typed (empty rows are dropped on Save)
+  trustedDomains: string[]
   icons: Record<string, string>
 }
 
 // Same rule as FIREFOX_ID_RE in scripts/lib/branding.mjs (email-like or {GUID}).
 const FIREFOX_ID_RE = /^(?:[a-zA-Z0-9._-]*@[a-zA-Z0-9._-]+|\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\})$/
+// Same rule as DOMAIN_RE in scripts/lib/branding.mjs (the server validates again on Save).
+const DOMAIN_RE = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/
+// "https://Partner.com/login" or "*.partner.com" -> "partner.com" (a domain always covers its subdomains)
+const cleanDomain = (value: string) =>
+  value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^\*\./, '').replace(/[/?#:].*$/, '')
+const isBadDomain = (value: string) => cleanDomain(value) !== '' && !DOMAIN_RE.test(cleanDomain(value))
 
 const ICON_SIZES = [16, 32, 48, 128]
 const BUILD_STEPS = ['build', 'testBuild', 'pages', 'zip'] as const
@@ -54,6 +62,11 @@ const TEXT = {
     firefoxHint: 'Only if you publish the extension on Firefox Add-ons (addons.mozilla.org): a unique add-on ID in one of two formats - connector@your-company.com or @connector. The first upload claims it forever - choose it once and do not change it. Leave empty for Chrome and local installs.',
     firefoxInvalid: 'A unique add-on ID in one of two formats - connector@your-company.com or @connector',
     firefoxReserved: 'This ID belongs to the official GREEN-API extension - use your own',
+    domains: 'Trusted domains',
+    domainsHint: 'Only if your own site will start the authorization: its domain, e.g. partner.com (subdomains included). Several - add a row with +. The GREEN-API sites are always trusted. Decide before the first publication: adding a domain later makes users re-approve the extension.',
+    domainsInvalid: 'Not a domain',
+    domainAdd: 'Add a domain',
+    domainRemove: 'Remove',
     reset: 'Reset',
     stepDeps: 'Dependencies installed',
     stepSave: 'Brand saved',
@@ -104,6 +117,11 @@ const TEXT = {
     firefoxHint: 'Только если публикуете расширение в Firefox Add-ons (addons.mozilla.org): уникальный ID дополнения в одном из двух форматов - connector@your-company.com или @connector. Первая загрузка закрепляет его навсегда - выберите один раз и не меняйте. Для Chrome и локальной установки оставьте пустым.',
     firefoxInvalid: 'Уникальный ID дополнения в одном из двух форматов - connector@your-company.com или @connector',
     firefoxReserved: 'Этот ID принадлежит официальному расширению GREEN-API - укажите свой',
+    domains: 'Доверенные домены',
+    domainsHint: 'Только если авторизацию будет запускать ваш собственный сайт: его домен, например partner.com (вместе с поддоменами). Несколько - добавьте строку кнопкой +. Сайты GREEN-API доверенные всегда. Решите до первой публикации: домен, добавленный позже, заставит пользователей заново подтвердить расширение.',
+    domainsInvalid: 'Не домен',
+    domainAdd: 'Добавить домен',
+    domainRemove: 'Удалить',
     reset: 'Сбросить',
     stepDeps: 'Зависимости установлены',
     stepSave: 'Бренд сохранён',
@@ -280,12 +298,16 @@ export function BrandEditor({ lang, langs, brand, initial, config, onChange }: P
     : !FIREFOX_ID_RE.test(firefoxId) ? t.firefoxInvalid
     : firefoxId.toLowerCase() === config.officialFirefoxId ? t.firefoxReserved
     : null
+  const trustedDomains = [...new Set(brand.trustedDomains.map(cleanDomain).filter(Boolean))]
+  const badDomains = trustedDomains.filter((d) => !DOMAIN_RE.test(d))
+  const setDomains = (trustedDomains: string[]) => set({ trustedDomains })
   const errors = langs.flatMap((l) => [
     fieldError(brand.name[l] ?? '', config.nameMax),
     fieldError(brand.description[l] ?? '', config.descriptionMax),
   ]).filter(Boolean).length
     + (isHex(brand.colors.primary) ? 0 : 1) + (isHex(brand.colors.primaryDark) ? 0 : 1)
     + (firefoxError ? 1 : 0)
+    + (badDomains.length ? 1 : 0)
 
   const setPrimary = (value: string) => set({
     colors: { primary: value, primaryDark: separateDark ? brand.colors.primaryDark : value },
@@ -305,6 +327,7 @@ export function BrandEditor({ lang, langs, brand, initial, config, onChange }: P
       description: Object.fromEntries(langs.map((l) => [l, brand.description[l].trim()])),
       colors: { primary: brand.colors.primary.toLowerCase(), primaryDark: brand.colors.primaryDark.toLowerCase() },
       firefoxId,
+      trustedDomains,
       icons: brand.icons,
     }
     try {
@@ -498,6 +521,27 @@ export function BrandEditor({ lang, langs, brand, initial, config, onChange }: P
           </label>
           {firefoxError && <p className="pv-warn"><Icon path={mdiAlertOutline} size={0.6} /> {firefoxError}</p>}
           <p className="pv-hint">{t.firefoxHint}</p>
+        </fieldset>
+
+        <fieldset className="pv-field" disabled={locked}>
+          <legend>{t.domains}</legend>
+          {brand.trustedDomains.map((value, i) => {
+            const rows = brand.trustedDomains
+            const last = i === rows.length - 1
+            return (
+              <div key={i} className="pv-input-row pv-input-row-btn">
+                <input className={isBadDomain(value) ? 'pv-invalid' : ''} value={value} placeholder="partner.com" spellCheck={false}
+                  aria-label={t.domains} onChange={(e) => setDomains(rows.map((d, j) => (j === i ? e.target.value : d)))} />
+                {last
+                  ? <button type="button" className="pv-btn" title={t.domainAdd} aria-label={t.domainAdd} disabled={!value.trim()}
+                      onClick={() => setDomains([...rows, ''])}><Icon path={mdiPlus} size={0.75} /></button>
+                  : <button type="button" className="pv-btn" title={t.domainRemove} aria-label={`${t.domainRemove} ${value}`}
+                      onClick={() => setDomains(rows.filter((_, j) => j !== i))}><Icon path={mdiClose} size={0.75} /></button>}
+              </div>
+            )
+          })}
+          {badDomains.length > 0 && <p className="pv-warn"><Icon path={mdiAlertOutline} size={0.6} /> {t.domainsInvalid}: {badDomains.join(', ')}</p>}
+          <p className="pv-hint">{t.domainsHint}</p>
         </fieldset>
       </div>
 

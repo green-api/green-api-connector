@@ -4,11 +4,14 @@
 // (vite.config.ts -> brandingOverrides) and by the preview pages (scripts/lib/kit.mjs):
 //
 //   branding/brand.json       { "name": {"en","ru"}, "description": {"en","ru"}, "colors": {"primary","primaryDark"},
-//                               "firefoxId"?: "connector@company.com" }
+//                               "firefoxId"?: "connector@company.com", "trustedDomains"?: ["partner.com"] }
 //   branding/icons/icon{16,32,48,128}.png
 //
 // firefoxId (optional) replaces browser_specific_settings.gecko.id - needed only to publish on addons.mozilla.org,
 // where the first upload claims the ID forever. Without it the build keeps the official OFFICIAL_FIREFOX_ID.
+//
+// trustedDomains (optional) - extra domains whose pages may control the extension, ADDED to TRUSTED_DOMAINS in
+// src/shared/config.ts and trusted the same way: the domain and all its subdomains, https only.
 //
 // No branding/brand.json -> the default brand is built. CONNECTOR_BRANDING=off in the environment ignores branding/
 // (npm run release -- --default-brand).
@@ -30,11 +33,14 @@ export const OFFICIAL_FIREFOX_ID = '@green-api-connector'
 // Add-on ID formats accepted by Firefox: email-like ("name@domain", the name part may be empty) or a {GUID}.
 export const FIREFOX_ID_RE = /^(?:[a-zA-Z0-9._-]*@[a-zA-Z0-9._-]+|\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\})$/
 export const FIREFOX_ID_MAX = 80
+// A trusted domain: lowercase dot-separated labels of letters, digits and inner hyphens (punycode "xn--" included).
+export const DOMAIN_RE = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/
+export const isDomainList = (list) => Array.isArray(list) && list.every((d) => typeof d === 'string' && DOMAIN_RE.test(d))
 
 /**
  * @typedef {{ name: Record<string,string>, description: Record<string,string>,
- *   colors: { primary?: string, primaryDark?: string }, firefoxId: string | null, icons: Record<string,string>,
- *   dir: string }} Branding
+ *   colors: { primary?: string, primaryDark?: string }, firefoxId: string | null, trustedDomains: string[],
+ *   icons: Record<string,string>, dir: string }} Branding
  */
 
 /** Folder of the brand applied to builds (relative to root): brands/<id> (CONNECTOR_BRAND), branding, or null */
@@ -64,7 +70,9 @@ export function loadBranding(root) {
   }
   const firefoxId = typeof data.firefoxId === 'string' && data.firefoxId.trim() ? data.firefoxId.trim() : null
   if (firefoxId && !FIREFOX_ID_RE.test(firefoxId)) throw new Error(`${source}/brand.json: invalid firefoxId "${firefoxId}"`)
-  return { name: data.name ?? {}, description: data.description ?? {}, colors: data.colors ?? {}, firefoxId, icons, dir }
+  const trustedDomains = data.trustedDomains ?? []
+  if (!isDomainList(trustedDomains)) throw new Error(`${source}/brand.json: trustedDomains must be a list of domains like partner.com`)
+  return { name: data.name ?? {}, description: data.description ?? {}, colors: data.colors ?? {}, firefoxId, trustedDomains, icons, dir }
 }
 
 /** manifest.json text with the brand Firefox add-on ID (unchanged when the brand has none) */
