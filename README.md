@@ -42,7 +42,7 @@ npm run brand-editor -- --lang en
 The local editor page opens in your browser. If it does not open automatically, follow the URL printed in the terminal.
 
 1. If an **Install dependencies** button is shown, click it and wait for the full editor to load.
-2. Upload your logo (a square 512×512 PNG or SVG is recommended), fill in the required description fields and choose the primary color. If you will publish the extension to Firefox Add-ons, enter your own **Firefox ID** - a unique add-on ID in one of these formats - `connector@your-company.com` or `@connector`.
+2. Upload your logo (a square 512×512 PNG or SVG is recommended), fill in the required description fields and choose the primary color. If you will publish the extension to Firefox Add-ons, enter your own **Firefox ID** - a unique add-on ID in one of these formats - `connector@your-company.com` or `@connector`. In **"Trusted domains"** enter the domains of your sites that will start the authorization (e.g. `example.com`, subdomains included) - only these sites can control the extension. Settle it before the first publication.
 3. Click **Save**. The editor writes the brand to the `branding/` folder.
 4. Click **Build extension** and wait for it to finish. The editor shows the release path and an **Open extension folder** button.
 5. Close the editor tab after the build — the local server stops.

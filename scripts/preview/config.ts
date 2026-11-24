@@ -12,6 +12,7 @@ export interface EditorConfig {
   firefoxId: string
   firefoxIdMax: number
   officialFirefoxId: string
+  trustedDomains: string[]
 }
 
 export interface PageConfig {

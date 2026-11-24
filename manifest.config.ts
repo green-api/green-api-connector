@@ -1,10 +1,8 @@
 import { readFileSync } from 'node:fs'
 import { defineManifest } from '@crxjs/vite-plugin'
-import { getTrustedHosts } from './src/shared/config'
 import { manifestContribution as whatsappManifest } from './src/packages/whatsapp/manifest'
 import { manifestContribution as maxManifest } from './src/packages/max/manifest'
 
-const APP_HOSTS = getTrustedHosts()
 const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf-8'))
 
 const MESSENGER_MANIFESTS = {
@@ -24,14 +22,15 @@ export const DEFAULT_MESSENGER = 'whatsapp'
 export const MESSENGER = process.env.MESSENGER ?? DEFAULT_MESSENGER
 const messengerManifest = getMessengerManifest(MESSENGER);
 
-export default defineManifest({
+// appHosts: the trusted hosts of the build (vite.config.ts -> getTrustedHosts).
+export default (appHosts: string[]) => defineManifest({
   manifest_version: 3,
   name: '__MSG_extName__',
   description: '__MSG_extDescription__',
   default_locale: 'en',
   version,
   permissions: ['scripting', 'tabs', 'browsingData'],
-  host_permissions: [...messengerManifest.matches, ...APP_HOSTS],
+  host_permissions: [...messengerManifest.matches, ...appHosts],
   background: { 
     service_worker: 'src/background/index.ts',
     type: 'module',
@@ -54,7 +53,7 @@ export default defineManifest({
       run_at: 'document_start' 
     },
     { 
-      matches: APP_HOSTS, 
+      matches: appHosts,
       js: ['src/content/app-bridge.ts'], 
       run_at: 'document_idle' 
     },

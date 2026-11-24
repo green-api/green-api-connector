@@ -181,15 +181,17 @@ function setupPage() {
 
 function editorPage() {
   const brand = readBrand({ messenger: CLIENT_MESSENGER, lang })
+  const saved = loadBranding(ROOT)
   return renderPage(pageConfig(brand, 'editor', {
     editor: {
       token,
       api: { status: '/api/status', save: '/api/save', build: '/api/build', openFolder: '/api/open-folder', closed: '/api/closed' },
       nameMax: NAME_MAX,
       descriptionMax: DESCRIPTION_MAX,
-      firefoxId: loadBranding(ROOT)?.firefoxId ?? '',
+      firefoxId: saved?.firefoxId ?? '',
       firefoxIdMax: FIREFOX_ID_MAX,
       officialFirefoxId: OFFICIAL_FIREFOX_ID,
+      trustedDomains: saved?.trustedDomains ?? [],
     },
   }), pages)
 }
